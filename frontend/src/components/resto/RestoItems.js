@@ -10,8 +10,13 @@ import {
   List,
   ListItem,
   ListItemText,
+  InputBase,
+  AppBar,
+  Toolbar,
+  Button,
 } from '@mui/material';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
 
 function RestoItems() {
   const [items, setItems] = useState([]);
@@ -21,7 +26,8 @@ function RestoItems() {
   const [openCartModal, setOpenCartModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [variants, setVariants] = useState([]);
-
+  const [searchQuery, setSearchQuery] = useState('');
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,7 +39,6 @@ function RestoItems() {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
@@ -67,6 +72,10 @@ function RestoItems() {
     setVariants([]);
   };
 
+  const filteredItems = items.filter(item =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) return (
     <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
       <CircularProgress />
@@ -80,119 +89,94 @@ function RestoItems() {
   );
 
   return (
-    <Box padding={2}>
-      <Typography variant="h4" gutterBottom>
-        Data Barang
-      </Typography>
-      <Box display="flex" flexDirection="column" gap={2}>
-        {items.map((item) => (
-          <Paper
-            key={item.id_resto_item}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: 2,
-              borderRadius: 2,
-              cursor: 'pointer',
-            }}
-            onClick={() => handleOpenDetail(item.id_resto_item)}
-          >
-            <img
-              src={item.photo}
-              alt={item.title}
-              style={{
-                width: '80px',
-                height: '80px',
-                borderRadius: '8px',
-                objectFit: 'cover',
-                marginRight: '16px'
-              }}
+    <Box>
+      {/* Navbar */}
+      <AppBar position="sticky" sx={{ backgroundColor: '#1976d2' }}>
+        <Toolbar>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+            <SearchIcon sx={{ marginRight: 1 }} />
+            <InputBase
+              placeholder="Search…"
+              sx={{ color: 'inherit', flex: 1 }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Box display="flex" flexDirection="column" alignItems="flex-start" flex="1">
-              <Typography variant="h6">{item.title}</Typography>
-              <Box display="flex" alignItems="center" mt={1}>
-                <Typography
-                  variant="h6"
-                  color="primary"
-                  sx={{ marginRight: 1, fontWeight: 'bold' }}
-                >
-                  Rp{item.base_price}
-                </Typography>
-                <IconButton
-                  sx={{ marginLeft: 2 }}
-                  color="primary"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Stop event propagation to prevent card click
-                    handleCartClick(item.id_resto_item);
-                  }}
-                >
-                  <ShoppingCartIcon />
-                </IconButton>
-              </Box>
-            </Box>
-          </Paper>
-        ))}
-      </Box>
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<MenuIcon />}
+            sx={{
+              marginLeft: 2,
+              backgroundColor: '#ffffff',
+              color: '#1976d2',
+              borderRadius: '20px',
+              '&:hover': { backgroundColor: '#e3f2fd' },
+            }}
+          >
+            Menu
+          </Button>
+        </Toolbar>
+      </AppBar>
 
-      {/* Modal untuk menampilkan detail item */}
-      <Modal
-        open={openDetailModal}
-        onClose={handleCloseDetail}
-        aria-labelledby="item-detail-modal-title"
-        aria-describedby="item-detail-modal-description"
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            borderRadius: 2,
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          {selectedItem && (
-            <>
-              <Typography variant="h6" id="item-detail-modal-title" gutterBottom>
-                {selectedItem.title}
-              </Typography>
+      <Box padding={3}>
+        <Box display="flex" flexDirection="column" gap={2}>
+          {filteredItems.map((item) => (
+            <Paper
+              key={item.id_resto_item}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: 2,
+                borderRadius: 2,
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                '&:hover': {
+                  transform: 'scale(1.02)',
+                  boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                },
+              }}
+              onClick={() => handleOpenDetail(item.id_resto_item)}
+            >
               <img
-                src={selectedItem.photo}
-                alt={selectedItem.title}
+                src={item.photo}
+                alt={item.title}
                 style={{
-                  width: '100%',
-                  height: '200px',
+                  width: '80px',
+                  height: '80px',
                   borderRadius: '8px',
                   objectFit: 'cover',
-                  marginBottom: '16px'
+                  marginRight: '16px',
                 }}
               />
-              <Typography variant="body1" gutterBottom>
-                {selectedItem.description}
-              </Typography>
-              <Typography variant="h6" color="primary" gutterBottom>
-                Harga: Rp{selectedItem.base_price}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Stok: {selectedItem.stock}
-              </Typography>
-            </>
-          )}
+              <Box display="flex" flexDirection="column" alignItems="flex-start" flex="1">
+                <Typography variant="h6" fontWeight="600">{item.title}</Typography>
+                <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
+                  Rp{item.base_price}
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: '20px',
+                  backgroundColor: '#1976d2',
+                  color: '#ffffff',
+                  padding: '4px 12px',
+                  '&:hover': { backgroundColor: '#1565c0' },
+                }}
+                onClick={(e) => {
+                  e.stopPropagation(); // Menghentikan event propagation
+                  handleCartClick(item.id_resto_item);
+                }}
+              >
+                Tambah
+              </Button>
+            </Paper>
+          ))}
         </Box>
-      </Modal>
 
-      {/* Modal untuk menampilkan varian item */}
-      <Modal
-        open={openCartModal}
-        onClose={handleCloseCart}
-        aria-labelledby="variant-modal-title"
-        aria-describedby="variant-modal-description"
-      >
-        <Box
-          sx={{
+        {/* Modals */}
+        <Modal open={openDetailModal} onClose={handleCloseDetail}>
+          <Box sx={{
             position: 'absolute',
             top: '50%',
             left: '50%',
@@ -202,23 +186,47 @@ function RestoItems() {
             borderRadius: 2,
             boxShadow: 24,
             p: 4,
-          }}
-        >
-          <Typography variant="h6" id="variant-modal-title" gutterBottom>
-            Varian untuk Item
-          </Typography>
-          <List>
-            {variants.map((variant) => (
-              <ListItem key={variant.variant_id}>
-                <ListItemText
-                  primary={variant.title}
-                  secondary={`Extra Price: Rp${variant.extra_price}`}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Modal>
+          }}>
+            {selectedItem && (
+              <>
+                <Typography variant="h6" fontWeight="600" gutterBottom>{selectedItem.title}</Typography>
+                <img src={selectedItem.photo} alt={selectedItem.title} style={{
+                  width: '100%', height: '200px', borderRadius: '8px', objectFit: 'cover', marginBottom: '16px'
+                }} />
+                <Typography variant="body1" color="text.secondary" gutterBottom>{selectedItem.description}</Typography>
+                <Typography variant="h6" color="primary" gutterBottom>Harga: Rp{selectedItem.base_price}</Typography>
+                <Typography variant="body2" color="textSecondary">Stok: {selectedItem.stock}</Typography>
+              </>
+            )}
+          </Box>
+        </Modal>
+
+        <Modal open={openCartModal} onClose={handleCloseCart}>
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 4,
+          }}>
+            <Typography variant="h6" fontWeight="600" gutterBottom>Varian untuk Item</Typography>
+            <List>
+              {variants.map((variant) => (
+                <ListItem key={variant.variant_id}>
+                  <ListItemText
+                    primary={variant.title}
+                    secondary={`Extra Price: Rp${variant.extra_price}`}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Modal>
+      </Box>
     </Box>
   );
 }
