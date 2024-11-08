@@ -18,6 +18,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 function RestoItems() {
   const [items, setItems] = useState([]);
@@ -28,7 +29,8 @@ function RestoItems() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [variants, setVariants] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  
+  const totalPrice = 3000000; // contoh total harga yang ditampilkan
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -244,6 +246,39 @@ function RestoItems() {
             </List>
           </Box>
         </Modal>
+
+        {/* Bottom Floating Navbar */}
+        <Box sx={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: '#ffffff',
+          boxShadow: '0px -2px 10px rgba(0, 0, 0, 0.1)',
+          padding: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          zIndex: 1000,
+        }}>
+          <IconButton>
+            <ShoppingCartIcon sx={{ color: '#1976d2' }} />
+          </IconButton>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+            Rp{totalPrice.toLocaleString('id-ID')}
+          </Typography>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: '#1976d2',
+              color: '#ffffff',
+              borderRadius: '20px',
+              '&:hover': { backgroundColor: '#1565c0' },
+            }}
+          >
+            View Cart
+          </Button>
+        </Box>
       </Box>
     </Box>
   );
