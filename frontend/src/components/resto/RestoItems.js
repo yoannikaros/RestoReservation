@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 
 function RestoItems() {
   const [items, setItems] = useState([]);
@@ -129,7 +130,7 @@ function RestoItems() {
                 padding: 2,
                 borderRadius: 2,
                 cursor: 'pointer',
-                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                transition: 'transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out',
                 '&:hover': {
                   transform: 'scale(1.02)',
                   boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
@@ -174,19 +175,27 @@ function RestoItems() {
           ))}
         </Box>
 
-        {/* Modals */}
+        {/* Detail Modal */}
         <Modal open={openDetailModal} onClose={handleCloseDetail}>
           <Box sx={{
             position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            top: '40%',  // Sisakan ruang di bagian atas
             bgcolor: 'background.paper',
-            borderRadius: 2,
+            borderRadius: '16px 16px 0 0',  // Rounded top corners
             boxShadow: 24,
-            p: 4,
+            p: 3,
+            overflowY: 'auto',
+            animation: 'slideUp 0.9s ease-out', // Animasi muncul dari bawah
           }}>
+            <IconButton
+              sx={{ position: 'absolute', top: 8, right: 8 }}
+              onClick={handleCloseDetail}
+            >
+              <CloseIcon />
+            </IconButton>
             {selectedItem && (
               <>
                 <Typography variant="h6" fontWeight="600" gutterBottom>{selectedItem.title}</Typography>
@@ -201,18 +210,27 @@ function RestoItems() {
           </Box>
         </Modal>
 
+        {/* Cart Modal */}
         <Modal open={openCartModal} onClose={handleCloseCart}>
           <Box sx={{
             position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            top: '40%',  // Sisakan ruang di bagian atas
             bgcolor: 'background.paper',
-            borderRadius: 2,
+            borderRadius: '16px 16px 0 0',
             boxShadow: 24,
-            p: 4,
+            p: 3,
+            overflowY: 'auto',
+            animation: 'slideUp 1.0s ease-out', // Animasi muncul dari bawah
           }}>
+            <IconButton
+              sx={{ position: 'absolute', top: 8, right: 8 }}
+              onClick={handleCloseCart}
+            >
+              <CloseIcon />
+            </IconButton>
             <Typography variant="h6" fontWeight="600" gutterBottom>Varian untuk Item</Typography>
             <List>
               {variants.map((variant) => (
