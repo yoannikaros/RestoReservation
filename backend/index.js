@@ -5,6 +5,7 @@ const path = require('path'); // Tambahkan ini untuk mengakses path
 const restoItemRoutes = require('./routes/resto/restoItemRoutes');
 const cartRoutes = require('./routes/resto/cartRoutes');
 const orderRoutes = require('./routes/resto/orderRoutes');
+const variantRoutes = require('./routes/resto/variantRoutes');
 
 const app = express();
 const PORT = 3000;
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 app.use('/api', restoItemRoutes);
 app.use('/api', cartRoutes);
 app.use('/api', orderRoutes);
+app.use('/api', variantRoutes);
 
 // Menyajikan static files React dari folder build
 app.use(express.static(path.join(__dirname, '../frontend/build')));
