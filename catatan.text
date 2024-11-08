@@ -1,0 +1,3 @@
+
+printah terimanal:
+mode produksi front-end: npm run build --prefix frontend
