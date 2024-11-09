@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LandingPage from './components/landingpage/LandingPage';
-import RestoItems from './components/resto/RestoItems';
+import RestoItems from './components/resto/order/index.js';
 
 function App() {
   return (
