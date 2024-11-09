@@ -27,10 +27,10 @@ function CartModal({ open, onClose, variants }) {
         <Typography variant="h6" fontWeight="600" gutterBottom>Varian untuk Item</Typography>
         <List>
           {variants.map((variant) => (
-            <ListItem key={variant.variant_id}>
+            <ListItem key={variant.variant_id || 'base_price'}>
               <ListItemText
-                primary={variant.title}
-                secondary={`Extra Price: Rp${variant.extra_price}`}
+                primary={variant.title || "Original"} // Ganti dengan "Original" jika title tidak ada
+                secondary={`Harga: Rp${variant.extra_price}`}
               />
             </ListItem>
           ))}

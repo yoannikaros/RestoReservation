@@ -15,10 +15,11 @@ function ItemList({ items, onOpenDetail, onCartClick }) {
               padding: 2,
               borderRadius: 2,
               cursor: 'pointer',
+              boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)', // Shadow default
               transition: 'transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out',
               '&:hover': {
                 transform: 'scale(1.02)',
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)', // Shadow saat hover
               },
             }}
             onClick={() => onOpenDetail(item.id_resto_item)}

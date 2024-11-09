@@ -6,7 +6,7 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import Navbar from './Navbar';
 import ItemList from './ItemList';
 import DetailModal from './DetailModal';
-import CartModal from './CartModal';
+import CartModal from './VariantModal';
 import BottomNav from './BottomNav';
 
 
@@ -47,13 +47,41 @@ function RestoItems() {
 
   const handleCartClick = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/variants/resto_item/${id}`);
-      setVariants(response.data);
+      let fetchedVariants = [];
+  
+      // Pertama, coba ambil varian item
+      try {
+        const variantResponse = await axios.get(`http://localhost:3000/api/variants/resto_item/${id}`);
+        fetchedVariants = variantResponse.data;
+      } catch (variantError) {
+        // Jika respons 404, itu berarti tidak ada varian, kita lanjutkan ke base_price
+        if (variantError.response && variantError.response.status === 404) {
+          console.log("Variants not found, fetching base price instead.");
+        } else {
+          throw variantError; // Jika bukan 404, lempar error
+        }
+      }
+  
+      if (fetchedVariants.length > 0) {
+        setVariants(fetchedVariants);
+      } else {
+        // Ambil `base_price` dari data `resto_item` jika tidak ada varian
+        const itemResponse = await axios.get(`http://localhost:3000/api/resto_items/${id}`);
+        const item = itemResponse.data.results.resto_item;
+        
+        // Set `base_price` sebagai varian default
+        setVariants([{ title: "Original", extra_price: item.base_price }]);
+      }
+  
       setOpenCartModal(true);
     } catch (error) {
-      setError("Error fetching variants");
+      console.error("Error fetching variants or item details:", error);
+      setError("Error fetching variants or item details");
     }
   };
+  
+  
+  
 
   const handleCloseDetail = () => {
     setOpenDetailModal(false);
