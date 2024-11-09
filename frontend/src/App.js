@@ -13,7 +13,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
 
           {/* Route untuk halaman RestoItems */}
-          <Route path="/resto/order" element={<RestoItems />} />
+          <Route path="/resto/order/:id/:notabel" element={<RestoItems />} />
         </Routes>
       </div>
     </Router>

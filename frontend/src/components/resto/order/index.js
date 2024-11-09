@@ -8,10 +8,12 @@ import ItemList from './ItemList';
 import DetailModal from './DetailModal';
 import CartModal from './VariantModal';
 import BottomNav from './BottomNav';
+import { useParams } from 'react-router-dom'; // Import useParams
 
 
 function RestoItems() {
   const [items, setItems] = useState([]);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openDetailModal, setOpenDetailModal] = useState(false);
@@ -21,12 +23,15 @@ function RestoItems() {
   const [searchQuery, setSearchQuery] = useState('');
   const totalPrice = 3000000; // contoh total harga yang ditampilkan
   const [photo, setPhoto] = useState('');
+  const [base_price, setPrice] = useState('');
+  const [id_resto_item , setIdItem] = useState('');
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const { id, notabel } = useParams(); // Get both id and notabel from URL
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/resto_items');
+        const response = await axios.get(`http://localhost:3000/api/resto_items/profile/${id}`);
         setItems(response.data.results.resto_item);
         setLoading(false);
       } catch (error) {
@@ -35,7 +40,7 @@ function RestoItems() {
       }
     };
     fetchData();
-  }, []);
+  }, [id, notabel]);
 
   const handleOpenDetail = async (id) => {
     try {
@@ -52,7 +57,8 @@ function RestoItems() {
     try {
       let fetchedVariants = [];
       let photoUrl = '';
-
+      let priceBase = '';
+      let idItem = '';
       try {
         const variantResponse = await axios.get(`http://localhost:3000/api/variants/resto_item/${id}`);
         fetchedVariants = variantResponse.data;
@@ -60,6 +66,8 @@ function RestoItems() {
         const itemResponse = await axios.get(`http://localhost:3000/api/resto_items/${id}`);
         const item = itemResponse.data.results.resto_item;
         photoUrl = item.photo; // Ambil URL foto dari data item
+        priceBase = item.base_price;
+        idItem = id;
 
       } catch (variantError) {
         if (variantError.response && variantError.response.status === 404) {
@@ -75,11 +83,17 @@ function RestoItems() {
         const itemResponse = await axios.get(`http://localhost:3000/api/resto_items/${id}`);
         const item = itemResponse.data.results.resto_item;
         photoUrl = item.photo; // Ambil URL foto dari data item
+        priceBase = item.base_price;
+        idItem = id;
+
         setVariants([{ title: "Original", extra_price: item.base_price }]);
 
       }
 
       setPhoto(photoUrl); // Set state untuk menyimpan URL foto
+      setPrice(priceBase);
+      setIdItem(idItem);
+
       setOpenCartModal(true);
     } catch (error) {
       console.error("Error fetching variants or item details:", error);
@@ -96,7 +110,7 @@ function RestoItems() {
   const handleCloseCart = () => {
     setOpenCartModal(false);
     setVariants([]);
-    setSelectedVariant({ title: "Pilih varian", extra_price: 0 }); // Reset selectedVariant on close
+    setSelectedVariant({ title: "Pilih varian", extra_price: 0, base_price: 0 }); // Reset selectedVariant on close
 
   };
 
@@ -134,7 +148,7 @@ function RestoItems() {
   <BottomNav totalPrice={totalPrice} />
   
   <DetailModal open={openDetailModal} onClose={handleCloseDetail} selectedItem={selectedItem} />
-  <CartModal open={openCartModal} onClose={handleCloseCart} variants={variants} photo={photo} />
+  <CartModal open={openCartModal} onClose={handleCloseCart} variants={variants} photo={photo} base_price={base_price} profile_id={id} id_resto_item={id_resto_item} />
 </Box>
 
 
