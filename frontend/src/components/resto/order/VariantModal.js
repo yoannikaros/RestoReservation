@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Modal, Box, Typography, IconButton, Button, ButtonGroup } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-function CartModal({ open, onClose, variants }) {
+function CartModal({ open, onClose, variants , photo  }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
@@ -24,7 +24,7 @@ function CartModal({ open, onClose, variants }) {
         bottom: 0,
         left: 0,
         right: 0,
-        top: '30%',
+        top: '34%',
         bgcolor: 'background.paper',
         borderRadius: '16px 16px 0 0',
         boxShadow: 24,
@@ -39,8 +39,15 @@ function CartModal({ open, onClose, variants }) {
           <CloseIcon />
         </IconButton>
 
+        {/* Tampilan Foto Item */}
+        {photo && (
+          <Box mb={2} display="flex" justifyContent="center">
+            <img src={photo} alt="Item" style={{ width: '100%', maxWidth: '200px', borderRadius: '8px' }} />
+          </Box>
+        )}
+
         {/* Judul Varian */}
-        <Typography variant="h6" fontWeight="600" gutterBottom>Varian untuk Item</Typography>
+        <Typography variant="body1" color="text.secondary" gutterBottom>Silakan pilih varian</Typography>
 
         {/* Pilihan Varian */}
         <ButtonGroup variant="outlined" fullWidth>

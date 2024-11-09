@@ -20,6 +20,7 @@ function RestoItems() {
   const [variants, setVariants] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const totalPrice = 3000000; // contoh total harga yang ditampilkan
+  const [photo, setPhoto] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,42 +46,45 @@ function RestoItems() {
     }
   };
 
+
   const handleCartClick = async (id) => {
     try {
       let fetchedVariants = [];
+      let photoUrl = '';
   
-      // Pertama, coba ambil varian item
       try {
         const variantResponse = await axios.get(`http://localhost:3000/api/variants/resto_item/${id}`);
         fetchedVariants = variantResponse.data;
+
+        const itemResponse = await axios.get(`http://localhost:3000/api/resto_items/${id}`);
+        const item = itemResponse.data.results.resto_item;
+        photoUrl = item.photo; // Ambil URL foto dari data item
+
       } catch (variantError) {
-        // Jika respons 404, itu berarti tidak ada varian, kita lanjutkan ke base_price
         if (variantError.response && variantError.response.status === 404) {
           console.log("Variants not found, fetching base price instead.");
         } else {
-          throw variantError; // Jika bukan 404, lempar error
+          throw variantError;
         }
       }
   
       if (fetchedVariants.length > 0) {
         setVariants(fetchedVariants);
       } else {
-        // Ambil `base_price` dari data `resto_item` jika tidak ada varian
         const itemResponse = await axios.get(`http://localhost:3000/api/resto_items/${id}`);
         const item = itemResponse.data.results.resto_item;
-        
-        // Set `base_price` sebagai varian default
+        photoUrl = item.photo; // Ambil URL foto dari data item
         setVariants([{ title: "Original", extra_price: item.base_price }]);
+
       }
   
+      setPhoto(photoUrl); // Set state untuk menyimpan URL foto
       setOpenCartModal(true);
     } catch (error) {
       console.error("Error fetching variants or item details:", error);
       setError("Error fetching variants or item details");
     }
   };
-  
-  
   
 
   const handleCloseDetail = () => {
@@ -114,7 +118,7 @@ function RestoItems() {
       <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <ItemList items={filteredItems} onOpenDetail={handleOpenDetail} onCartClick={handleCartClick} />
       <DetailModal open={openDetailModal} onClose={handleCloseDetail} selectedItem={selectedItem} />
-      <CartModal open={openCartModal} onClose={handleCloseCart} variants={variants} />
+      <CartModal open={openCartModal} onClose={handleCloseCart} variants={variants} photo={photo} />
       <BottomNav totalPrice={totalPrice} />
     </Box>
   );
