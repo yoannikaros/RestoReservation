@@ -15,11 +15,11 @@ function ItemList({ items, onOpenDetail, onCartClick }) {
               padding: 2,
               borderRadius: 2,
               cursor: 'pointer',
-              boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)', // Shadow default
+              boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
               transition: 'transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out',
               '&:hover': {
                 transform: 'scale(1.02)',
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)', // Shadow saat hover
+                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)',
               },
             }}
             onClick={() => onOpenDetail(item.id_resto_item)}
@@ -36,18 +36,23 @@ function ItemList({ items, onOpenDetail, onCartClick }) {
               }}
             />
             <Box display="flex" flexDirection="column" alignItems="flex-start" flex="1">
-              <Typography variant="h6" fontWeight="600">{item.title}</Typography>
-              <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
+              <Typography variant="h6" fontWeight="600" sx={{ fontSize: '0.975rem' }}>
+                {item.title}
+              </Typography>
+              <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', fontSize: '0.975rem' }}>
                 Rp{item.base_price}
               </Typography>
+
             </Box>
             <Button
               variant="contained"
               sx={{
-                borderRadius: '20px',
+                borderRadius: '16px', // Sesuaikan border-radius untuk tampilan lebih kecil
                 backgroundColor: '#1976d2',
                 color: '#ffffff',
-                padding: '4px 12px',
+                fontSize: '0.75rem', // Sesuaikan ukuran font untuk tampilan lebih kecil
+                padding: '2px 8px', // Kurangi padding agar lebih kecil
+                minWidth: 'auto', // Hilangkan lebar minimum default tombol
                 '&:hover': { backgroundColor: '#1565c0' },
               }}
               onClick={(e) => {
@@ -57,8 +62,11 @@ function ItemList({ items, onOpenDetail, onCartClick }) {
             >
               Tambah
             </Button>
+
           </Paper>
         ))}
+        {/* Spacer untuk memberikan ruang kosong di akhir daftar */}
+        <Box height="50px" />
       </Box>
     </Box>
   );

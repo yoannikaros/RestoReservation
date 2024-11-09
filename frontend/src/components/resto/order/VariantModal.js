@@ -1,24 +1,30 @@
-
 import React, { useState } from 'react';
 import { Modal, Box, Typography, IconButton, Button, ButtonGroup } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-function CartModal({ open, onClose, variants , photo  }) {
+function CartModal({ open, onClose, variants, photo }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
-  // Fungsi untuk memilih varian
+  // Function to reset variant on modal close
+  const handleModalClose = () => {
+    setSelectedVariant({ title: "Pilih varian", extra_price: 0 });
+    setQuantity(1); // Reset quantity if needed
+    onClose();
+  };
+
+  // Function to select a variant
   const handleVariantSelect = (variant) => {
     setSelectedVariant(variant);
   };
 
-  // Fungsi untuk menambah atau mengurangi jumlah
+  // Function to increment or decrement quantity
   const handleQuantityChange = (increment) => {
     setQuantity((prevQuantity) => Math.max(1, prevQuantity + increment));
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={handleModalClose}>
       <Box sx={{
         position: 'absolute',
         bottom: 0,
@@ -31,25 +37,23 @@ function CartModal({ open, onClose, variants , photo  }) {
         p: 3,
         overflowY: 'auto',
       }}>
-        {/* Tombol Close */}
         <IconButton
           sx={{ position: 'absolute', top: 8, right: 8 }}
-          onClick={onClose}
+          onClick={handleModalClose}
         >
           <CloseIcon />
         </IconButton>
 
-        {/* Tampilan Foto Item */}
         {photo && (
           <Box mb={2} display="flex" justifyContent="center">
-            <img src={photo} alt="Item" style={{ width: '100%', maxWidth: '200px', borderRadius: '8px' }} />
+            <img src={photo} alt="Item" style={{
+              width: '100%', height: '200px', borderRadius: '8px', objectFit: 'cover', marginBottom: '5px'
+            }} />
           </Box>
         )}
 
-        {/* Judul Varian */}
         <Typography variant="body1" color="text.secondary" gutterBottom>Silakan pilih varian</Typography>
 
-        {/* Pilihan Varian */}
         <ButtonGroup variant="outlined" fullWidth>
           {variants.map((variant) => (
             <Button
@@ -62,7 +66,6 @@ function CartModal({ open, onClose, variants , photo  }) {
           ))}
         </ButtonGroup>
 
-        {/* Bagian Bawah Hijau Mengambang */}
         <Box sx={{
           position: 'fixed',
           bottom: 0,
@@ -77,21 +80,16 @@ function CartModal({ open, onClose, variants , photo  }) {
           maxWidth: '600px',
           margin: '0 auto',
         }}>
-          {/* Baris Harga dan Counter */}
           <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
-            {/* Harga di sebelah kiri */}
             <Box>
               <Typography variant="h6" color="black">
                 Rp{selectedVariant ? selectedVariant.extra_price : '0'}
               </Typography>
-
-              {/* Nama Varian di bawah harga, rata kiri */}
               <Typography variant="body1" color="black">
                 {selectedVariant ? selectedVariant.title : 'Pilih varian'}
               </Typography>
             </Box>
 
-            {/* Counter di sebelah kanan harga */}
             <Box display="flex" alignItems="center">
               <Button sx={{ color: 'black' }} onClick={() => handleQuantityChange(-1)}>-</Button>
               <Typography sx={{ mx: 2, color: 'black' }}>{quantity}</Typography>
@@ -99,7 +97,6 @@ function CartModal({ open, onClose, variants , photo  }) {
             </Box>
           </Box>
 
-          {/* Tombol Add to Cart */}
           <Button
             variant="contained"
             color="primary"
@@ -112,9 +109,8 @@ function CartModal({ open, onClose, variants , photo  }) {
               maxWidth: '100%',
             }}
             onClick={() => {
-              // Logika untuk menambahkan item ke keranjang
               console.log(`Menambahkan ${quantity} item ke keranjang dengan varian ${selectedVariant?.title}`);
-              onClose();
+              handleModalClose();
             }}
           >
             Add to Cart

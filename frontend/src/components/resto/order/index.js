@@ -21,6 +21,7 @@ function RestoItems() {
   const [searchQuery, setSearchQuery] = useState('');
   const totalPrice = 3000000; // contoh total harga yang ditampilkan
   const [photo, setPhoto] = useState('');
+  const [selectedVariant, setSelectedVariant] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +52,7 @@ function RestoItems() {
     try {
       let fetchedVariants = [];
       let photoUrl = '';
-  
+
       try {
         const variantResponse = await axios.get(`http://localhost:3000/api/variants/resto_item/${id}`);
         fetchedVariants = variantResponse.data;
@@ -67,7 +68,7 @@ function RestoItems() {
           throw variantError;
         }
       }
-  
+
       if (fetchedVariants.length > 0) {
         setVariants(fetchedVariants);
       } else {
@@ -77,7 +78,7 @@ function RestoItems() {
         setVariants([{ title: "Original", extra_price: item.base_price }]);
 
       }
-  
+
       setPhoto(photoUrl); // Set state untuk menyimpan URL foto
       setOpenCartModal(true);
     } catch (error) {
@@ -85,7 +86,7 @@ function RestoItems() {
       setError("Error fetching variants or item details");
     }
   };
-  
+
 
   const handleCloseDetail = () => {
     setOpenDetailModal(false);
@@ -95,6 +96,8 @@ function RestoItems() {
   const handleCloseCart = () => {
     setOpenCartModal(false);
     setVariants([]);
+    setSelectedVariant({ title: "Pilih varian", extra_price: 0 }); // Reset selectedVariant on close
+
   };
 
   const filteredItems = items.filter(item =>
@@ -114,13 +117,27 @@ function RestoItems() {
   );
 
   return (
-    <Box>
-      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <ItemList items={filteredItems} onOpenDetail={handleOpenDetail} onCartClick={handleCartClick} />
-      <DetailModal open={openDetailModal} onClose={handleCloseDetail} selectedItem={selectedItem} />
-      <CartModal open={openCartModal} onClose={handleCloseCart} variants={variants} photo={photo} />
-      <BottomNav totalPrice={totalPrice} />
-    </Box>
+// RestoItems.js
+
+<Box 
+  sx={{ 
+    height: '100vh', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    overflowY: 'hidden' 
+  }}
+>
+  <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+  <Box sx={{ flex: 1, overflowY: 'auto' }}>
+    <ItemList items={filteredItems} onOpenDetail={handleOpenDetail} onCartClick={handleCartClick} />
+  </Box>
+  <BottomNav totalPrice={totalPrice} />
+  
+  <DetailModal open={openDetailModal} onClose={handleCloseDetail} selectedItem={selectedItem} />
+  <CartModal open={openCartModal} onClose={handleCloseCart} variants={variants} photo={photo} />
+</Box>
+
+
   );
 }
 
