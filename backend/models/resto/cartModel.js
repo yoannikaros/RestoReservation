@@ -1,44 +1,74 @@
 const pool = require('../../db');
 
-const Cart = {
-    getAll: async () => {
-        const query = `
-            SELECT c.*, i.title, i.description, i.base_price, i.category, i.photo, i.stock 
-            FROM resto_cart c 
-            JOIN resto_item i ON c.id_resto_item = i.id_resto_item;
-        `;
-        const [rows] = await pool.query(query);
-        return rows;
-    },
-
-    getById: async (id) => {
-        const query = `
-            SELECT c.*, i.title, i.description, i.base_price, i.category, i.photo, i.stock 
-            FROM resto_cart c 
-            JOIN resto_item i ON c.id_resto_item = i.id_resto_item 
-            WHERE c.id_cart_resto = ?;
-        `;
-        const [rows] = await pool.query(query, [id]);
-        return rows;
-    },
-
-    create: async (data) => {
-        const query = 'INSERT INTO resto_cart SET ?';
-        const [result] = await pool.query(query, data);
-        return result;
-    },
-
-    update: async (id, data) => {
-        const query = 'UPDATE resto_cart SET ? WHERE id_cart_resto = ?';
-        const [result] = await pool.query(query, [data, id]);
-        return result;
-    },
-
-    delete: async (id) => {
-        const query = 'DELETE FROM resto_cart WHERE id_cart_resto = ?';
-        const [result] = await pool.query(query, [id]);
-        return result;
-    }
-};
-
-module.exports = Cart;
+// Model untuk mengambil data berdasarkan profile_id
+const getCartByProfileId = async (profile_id) => {
+    const query = `
+      SELECT
+        rc.id_cart_resto,
+        rc.profile_id,
+        rc.id_resto_item,
+        rc.variant_id,
+        rc.quantity,
+        rc.note,
+        rc.status,
+        rv.title AS variant_title,
+        rv.extra_price,
+        ri.title AS item_title,
+        ri.description,
+        ri.base_price,
+        ri.category,
+        ri.photo,
+        ri.stock
+      FROM resto_cart AS rc
+      LEFT JOIN resto_variants AS rv ON rc.variant_id = rv.variant_id
+      LEFT JOIN resto_item AS ri ON rc.id_resto_item = ri.id_resto_item
+      WHERE rc.profile_id = ?
+    `;
+    const [rows] = await pool.execute(query, [profile_id]);
+    return rows;
+  };
+  
+  const getAllCarts = async () => {
+    const query = 'SELECT * FROM resto_cart';
+    const [rows] = await pool.execute(query);
+    return rows;
+  };
+  
+  const addToCart = async (cartData) => {
+    const { profile_id, id_resto_item, variant_id, quantity, note, status } = cartData;
+    const query = `
+      INSERT INTO resto_cart (profile_id, id_resto_item, variant_id, quantity, note, status)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    const [result] = await pool.execute(query, [profile_id, id_resto_item, variant_id, quantity, note, status]);
+    return result.insertId;
+  };
+  
+  // Update quantity di resto_cart berdasarkan id_cart_resto
+  const updateQuantity = async (id_cart_resto, quantity) => {
+    const query = `
+      UPDATE resto_cart
+      SET quantity = ?
+      WHERE id_cart_resto = ?
+    `;
+    const [result] = await pool.execute(query, [quantity, id_cart_resto]);
+    return result.affectedRows;
+  };
+  
+  // Hapus item dari resto_cart berdasarkan id_cart_resto
+  const deleteCartItem = async (id_cart_resto) => {
+    const query = `
+      DELETE FROM resto_cart
+      WHERE id_cart_resto = ?
+    `;
+    const [result] = await pool.execute(query, [id_cart_resto]);
+    return result.affectedRows;
+  };
+  
+  module.exports = {
+    getCartByProfileId,
+    getAllCarts,
+    addToCart,
+    updateQuantity,
+    deleteCartItem,
+  };

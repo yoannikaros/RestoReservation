@@ -1,77 +1,80 @@
-const orderModel = require('../../models/resto/orderModel');
+const RestoOrder = require('../../models/resto/orderModel');
 
-const getAllOrders = async (req, res) => {
+// Mendapatkan semua order
+exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await orderModel.getAllOrders();
-    res.json({
-      status: "OK",
-      results: {
-        resto_order: orders,
-      },
-    });
+    const orders = await RestoOrder.getAll();
+    res.json(orders);
   } catch (error) {
-    res.status(500).json({ status: "ERROR", message: error.message });
+    res.status(500).json({ error: 'Gagal mengambil data orders' });
   }
 };
 
-const getOrderById = async (req, res) => {
+// Mendapatkan order berdasarkan ID
+exports.getOrderById = async (req, res) => {
   try {
-    const id = req.params.id;
-    const order = await orderModel.getOrderById(id);
-    if (order.length > 0) {
-      res.json({
-        status: "OK",
-        results: {
-          resto_order: order,
-        },
-      });
+    const order = await RestoOrder.getById(req.params.id);
+    if (order) {
+      res.json(order);
     } else {
-      res.status(404).json({ status: "NOT FOUND" });
+      res.status(404).json({ error: 'Order tidak ditemukan' });
     }
   } catch (error) {
-    res.status(500).json({ status: "ERROR", message: error.message });
+    res.status(500).json({ error: 'Gagal mengambil data order' });
   }
 };
 
-
-const createOrder = async (req, res) => {
+// Mendapatkan order berdasarkan `profile_id`
+exports.getOrderByProfileId = async (req, res) => {
   try {
-    const newOrderId = await orderModel.createOrder(req.body);
-    res.status(201).json({
-      status: "CREATED",
-      results: {
-        id_order: newOrderId,
-      },
-    });
+    const orders = await RestoOrder.getByProfileId(req.params.profile_id);
+    res.json(orders);
   } catch (error) {
-    res.status(500).json({ status: "ERROR", message: error.message });
+    res.status(500).json({ error: 'Gagal mengambil data orders berdasarkan profile_id' });
   }
 };
 
-const updateOrder = async (req, res) => {
+// Mendapatkan detail order, cart, dan payment berdasarkan `id_cart_resto` dan `payment_id`
+exports.getDetailsByCartAndPayment = async (req, res) => {
   try {
-    const id = req.params.id;
-    await orderModel.updateOrder(id, req.body);
-    res.json({ status: "UPDATED" });
+    const { id_cart_resto, payment_id } = req.params;
+    const details = await RestoOrder.getDetailsByCartAndPayment(id_cart_resto, payment_id);
+    if (details.length > 0) {
+      res.json(details);
+    } else {
+      res.status(404).json({ error: 'Data tidak ditemukan untuk kombinasi id_cart_resto dan payment_id ini' });
+    }
   } catch (error) {
-    res.status(500).json({ status: "ERROR", message: error.message });
+    res.status(500).json({ error: 'Gagal mengambil data detail' });
   }
 };
 
-const deleteOrder = async (req, res) => {
+// Membuat order baru
+exports.createOrder = async (req, res) => {
   try {
-    const id = req.params.id;
-    await orderModel.deleteOrder(id);
-    res.json({ status: "DELETED" });
+    const id = await RestoOrder.create(req.body);
+    res.status(201).json({ message: 'Order berhasil dibuat', id });
   } catch (error) {
-    res.status(500).json({ status: "ERROR", message: error.message });
+    res.status(500).json({ error: 'Gagal membuat order baru' });
   }
 };
 
-module.exports = {
-  getAllOrders,
-  getOrderById,
-  createOrder,
-  updateOrder,
-  deleteOrder,
+// Mengupdate order
+exports.updateOrder = async (req, res) => {
+  try {
+    await RestoOrder.update(req.params.id, req.body);
+    res.json({ message: 'Order berhasil diperbarui' });
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal memperbarui order' });
+  }
+};
+
+// Menghapus order
+exports.deleteOrder = async (req, res) => {
+  try {
+    await RestoOrder.delete(req.params.id);
+    res.json({ message: 'Order berhasil dihapus' });
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal menghapus order' });
+  }
 };

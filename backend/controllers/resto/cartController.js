@@ -1,62 +1,68 @@
-const Cart = require('../../models/resto/cartModel');
+const CartModel = require('../../models/resto/cartModel');
 
-exports.getAllCarts = async (req, res) => {
+const getAllCarts = async (req, res) => {
     try {
-        const results = await Cart.getAll();
-        res.status(200).json({
-            status: 'OK',
-            results: {
-                resto_cart: results
-            }
-        });
-    } catch (err) {
-        res.status(500).json({ status: 'Error', message: err.message });
+      const carts = await CartModel.getAllCarts();
+      res.json(carts);
+    } catch (error) {
+      res.status(500).json({ error: 'Gagal mengambil data.' });
     }
-};
-
-exports.getCartById = async (req, res) => {
-    const id = req.params.id;
+  };
+  
+  const getCartByProfileId = async (req, res) => {
+    const { profile_id } = req.params;
     try {
-        const result = await Cart.getById(id);
-        if (result.length === 0) {
-            return res.status(404).json({ status: 'Not Found', message: 'Cart not found' });
-        }
-        res.status(200).json({
-            status: 'OK',
-            result: result[0]
-        });
-    } catch (err) {
-        res.status(500).json({ status: 'Error', message: err.message });
+      const cartDetails = await CartModel.getCartByProfileId(profile_id);
+      if (cartDetails.length === 0) {
+        return res.status(404).json({ message: 'Data tidak ditemukan.' });
+      }
+      res.json(cartDetails);
+    } catch (error) {
+      res.status(500).json({ error: 'Gagal mengambil data berdasarkan profile_id.' });
     }
-};
-
-exports.createCart = async (req, res) => {
-    const data = req.body;
+  };
+  
+  const addToCart = async (req, res) => {
+    const { profile_id, id_resto_item, variant_id, quantity, note, status } = req.body;
     try {
-        const result = await Cart.create(data);
-        res.status(201).json({ status: 'Created', id: result.insertId });
-    } catch (err) {
-        res.status(500).json({ status: 'Error', message: err.message });
+      const cartId = await CartModel.addToCart({ profile_id, id_resto_item, variant_id, quantity, note, status });
+      res.status(201).json({ message: 'Item berhasil ditambahkan ke cart.', cartId });
+    } catch (error) {
+      res.status(500).json({ error: 'Gagal menambahkan item ke cart.' });
     }
-};
-
-exports.updateCart = async (req, res) => {
-    const id = req.params.id;
-    const data = req.body;
+  };
+  
+  const updateQuantity = async (req, res) => {
+    const { id_cart_resto } = req.params;
+    const { quantity } = req.body;
     try {
-        const result = await Cart.update(id, data);
-        res.status(200).json({ status: 'Updated', affectedRows: result.affectedRows });
-    } catch (err) {
-        res.status(500).json({ status: 'Error', message: err.message });
+      const affectedRows = await CartModel.updateQuantity(id_cart_resto, quantity);
+      if (affectedRows === 0) {
+        return res.status(404).json({ message: 'Item tidak ditemukan atau tidak ada perubahan.' });
+      }
+      res.json({ message: 'Quantity berhasil diperbarui.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Gagal memperbarui quantity.' });
     }
-};
-
-exports.deleteCart = async (req, res) => {
-    const id = req.params.id;
+  };
+  
+  const deleteCartItem = async (req, res) => {
+    const { id_cart_resto } = req.params;
     try {
-        const result = await Cart.delete(id);
-        res.status(200).json({ status: 'Deleted', affectedRows: result.affectedRows });
-    } catch (err) {
-        res.status(500).json({ status: 'Error', message: err.message });
+      const affectedRows = await CartModel.deleteCartItem(id_cart_resto);
+      if (affectedRows === 0) {
+        return res.status(404).json({ message: 'Item tidak ditemukan.' });
+      }
+      res.json({ message: 'Item berhasil dihapus dari cart.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Gagal menghapus item dari cart.' });
     }
-};
+  };
+  
+  module.exports = {
+    getAllCarts,
+    getCartByProfileId,
+    addToCart,
+    updateQuantity,
+    deleteCartItem,
+  };

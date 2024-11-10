@@ -1,68 +1,64 @@
 const pool = require('../../db');
 
-const getAllOrders = async () => {
-  const [rows] = await pool.query(`
-    SELECT 
-      ro.*,
-      rc.id_cart_resto, rc.profile_id AS cart_profile_id, rc.id_resto_item, rc.variant_id, rc.quantity, rc.status AS cart_status,
-      rpm.payment_id, rpm.title, rpm.number, rpm.profile_id AS payment_profile_id
-    FROM 
-      resto_order ro
-    JOIN 
-      resto_cart rc ON ro.id_cart_resto = rc.id_cart_resto
-    LEFT JOIN 
-      resto_payments_methods rpm ON ro.payment_id = rpm.payment_id
-  `);
-  return rows;
+// Model untuk mengelola operasi `resto_order` dan menghubungkan dengan `resto_cart` dan `resto_payments_methods`
+const RestoOrder = {
+  // Mendapatkan semua order
+  async getAll() {
+    const [rows] = await pool.query('SELECT * FROM resto_order');
+    return rows;
+  },
+
+  // Mendapatkan order berdasarkan `id_order`
+  async getById(id) {
+    const [rows] = await pool.query('SELECT * FROM resto_order WHERE id_order = ?', [id]);
+    return rows[0];
+  },
+
+  // Mendapatkan order berdasarkan `profile_id`
+  async getByProfileId(profileId) {
+    const [rows] = await pool.query('SELECT * FROM resto_order WHERE profile_id = ?', [profileId]);
+    return rows;
+  },
+
+  // Mendapatkan detail data berdasarkan `id_cart_resto` dan `payment_id`
+  async getDetailsByCartAndPayment(idCartResto, paymentId) {
+    const [rows] = await pool.query(`
+      SELECT o.*, 
+             c.profile_id AS cart_profile_id, c.id_resto_item, c.variant_id, c.quantity, c.note, c.status AS cart_status,
+             p.title AS payment_title, p.number AS payment_number, p.profile_id AS payment_profile_id
+      FROM resto_order o
+      LEFT JOIN resto_cart c ON o.id_cart_resto = c.id_cart_resto
+      LEFT JOIN resto_payments_methods p ON o.payment_id = p.payment_id
+      WHERE o.id_cart_resto = ? AND o.payment_id = ?
+    `, [idCartResto, paymentId]);
+    return rows;
+  },
+
+  // Membuat order baru
+  async create(order) {
+    const { id_cart_resto, total_price, balance, amount, no_table, service, status, payment_id } = order;
+    const [result] = await pool.query(
+      `INSERT INTO resto_order (id_cart_resto, total_price, balance, amount, no_table, service, status, created_at, payment_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)`,
+      [id_cart_resto, total_price, balance, amount, no_table, service, status, payment_id]
+    );
+    return result.insertId;
+  },
+
+  // Mengupdate order berdasarkan `id_order`
+  async update(id, order) {
+    const { total_price, balance, amount, no_table, service, status, payment_id } = order;
+    await pool.query(
+      `UPDATE resto_order SET total_price = ?, balance = ?, amount = ?, no_table = ?, service = ?, status = ?, payment_id = ?
+       WHERE id_order = ?`,
+      [total_price, balance, amount, no_table, service, status, payment_id, id]
+    );
+  },
+
+  // Menghapus order berdasarkan `id_order`
+  async delete(id) {
+    await pool.query('DELETE FROM resto_order WHERE id_order = ?', [id]);
+  }
 };
 
-const getOrderById = async (id) => {
-  const [rows] = await pool.query(`
-    SELECT 
-      ro.*,
-      rc.id_cart_resto, rc.profile_id AS cart_profile_id, rc.id_resto_item, rc.variant_id, rc.quantity, rc.status AS cart_status,
-      rpm.payment_id, rpm.title, rpm.number, rpm.profile_id AS payment_profile_id
-    FROM 
-      resto_order ro
-    JOIN 
-      resto_cart rc ON ro.id_cart_resto = rc.id_cart_resto
-    LEFT JOIN 
-      resto_payments_methods rpm ON ro.payment_id = rpm.payment_id
-    WHERE 
-      ro.id_order = ?
-  `, [id]);
-  return rows;
-};
-
-const createOrder = async (orderData) => {
-  const { id_cart_resto, total_price, balance, amount, status, payment_id } = orderData;
-  const [result] = await pool.query(`
-    INSERT INTO resto_order (id_cart_resto, total_price, balance, amount, status, created_at, payment_id)
-    VALUES (?, ?, ?, ?, ?, NOW(), ?)
-  `, [id_cart_resto, total_price, balance, amount, status, payment_id]);
-  return result.insertId;
-};
-
-const updateOrder = async (id, orderData) => {
-  const { total_price, balance, amount, status, payment_id } = orderData;
-  await pool.query(`
-    UPDATE resto_order
-    SET total_price = ?, balance = ?, amount = ?, status = ?, payment_id = ?
-    WHERE id_order = ?
-  `, [total_price, balance, amount, status, payment_id, id]);
-};
-
-const deleteOrder = async (id) => {
-  await pool.query(`
-    DELETE FROM resto_order
-    WHERE id_order = ?
-  `, [id]);
-};
-
-module.exports = {
-  getAllOrders,
-  getOrderById,
-  createOrder,
-  updateOrder,
-  deleteOrder,
-};
+module.exports = RestoOrder;

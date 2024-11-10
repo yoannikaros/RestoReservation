@@ -7,6 +7,11 @@ const cartRoutes = require('./routes/resto/cartRoutes');
 const orderRoutes = require('./routes/resto/orderRoutes');
 const variantRoutes = require('./routes/resto/variantRoutes');
 const restoRoutes = require('./routes/resto/restoRoutes');
+const categoryRoutes = require('./routes/resto/categoryRoutes');
+const RestoTableRoutes = require('./routes/resto/RestoTableRoutes');
+const historyRoutes = require('./routes/resto/historyRoutes');
+const paymentRoutes = require('./routes/resto/paymentRoutes');
+
 
 const app = express();
 const PORT = 3000;
@@ -18,6 +23,10 @@ app.use('/api', cartRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', variantRoutes);
 app.use('/api', restoRoutes);
+app.use('/api', categoryRoutes);
+app.use('/api', RestoTableRoutes);
+app.use('/api', historyRoutes);
+app.use('/api', paymentRoutes);
 
 // Menyajikan static files React dari folder build
 app.use(express.static(path.join(__dirname, '../frontend/build')));
