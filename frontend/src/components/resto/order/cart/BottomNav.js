@@ -16,7 +16,7 @@ function BottomNav({ totalPrice }) {
       justifyContent: 'space-between',
       alignItems: 'center'
     }}>
-      <Typography variant="h6">Total: Rp {totalPrice.toLocaleString('id-ID')}</Typography>
+      <Typography sx={{ fontWeight: 'bold', color: '#1976d2' }} variant="h6"> Rp {totalPrice.toLocaleString('id-ID')}</Typography>
       <Button variant="contained" color="primary">Submit</Button>
     </Box>
   );

@@ -14,6 +14,7 @@ const dbPromise = openDB('cartDB', 1, {
     store.createIndex('title', 'title');
     store.createIndex('variant_title', 'variant_title');
     store.createIndex('harga', 'harga');
+    store.createIndex('photo', 'photo');
   },
 });
 

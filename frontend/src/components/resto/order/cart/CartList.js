@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, IconButton, Button, Paper } from '@mui/material';
+import { Box, Typography, IconButton, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import DeleteIcon from '@mui/icons-material/Delete';
 import Navbar from './Navbar';
 import BottomNav from './BottomNav';
 import { getCartItems, updateItemQuantity, deleteItemFromCart } from './cartDB';
@@ -33,19 +32,9 @@ function CartList() {
     }
   };
 
-  const handleDeleteItem = async (id) => {
-    await deleteItemFromCart(id);
-    loadCartItems();
-  };
-
   const calculateAndSetTotalPrice = (items) => {
     const total = items.reduce((sum, item) => sum + item.harga * item.quantity, 0);
     setTotalPrice(total);
-  };
-
-  // Fungsi untuk menghitung total harga per item
-  const calculateTotalPrice = (item) => {
-    return item.harga * item.quantity;
   };
 
   useEffect(() => {
@@ -84,40 +73,86 @@ function CartList() {
         </Box>
       </Box>
 
-      <Box sx={{ p: 2, mb: 8 }}>
+      <Box sx={{ p: 2, mb: 4 }}>
         {cartItems.length > 0 ? (
           cartItems.map((item) => (
-            <Paper key={item.id_cart_resto} sx={{
+            <Box key={item.id_cart_resto} sx={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
               p: 2,
               mb: 1,
-              boxShadow: 3,
-              borderRadius: 2,
+              boxShadow: 2,
+              borderRadius: 1,
               backgroundColor: '#fff',
             }}>
-              <Box sx={{ textAlign: 'left' }}>
-                <Typography variant="h6">{item.title}</Typography>
-                <Typography variant="body2" color="text.secondary">{item.variant_title}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {`Total: Rp ${calculateTotalPrice(item).toLocaleString()}`}
-                </Typography>
+              {/* Foto produk */}
+              <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                mr: 2,
+              }}>
+                <Box sx={{
+                  width: 60,
+                  height: 60,
+                  mb: 1,
+                  borderRadius: 4,
+                  overflow: 'hidden',
+                }}>
+                  <img
+                    src={item.photo}
+                    alt={item.title}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                </Box>
               </Box>
-              
-              <Box display="flex" alignItems="center">
-                <IconButton onClick={() => handleQuantityChange(item.id_cart_resto, -1)}>
-                  <RemoveIcon />
-                </IconButton>
-                <Typography>{item.quantity}</Typography>
-                <IconButton onClick={() => handleQuantityChange(item.id_cart_resto, 1)}>
-                  <AddIcon />
-                </IconButton>
-                <IconButton onClick={() => handleDeleteItem(item.id_cart_resto)} color="danger">
-                  <DeleteIcon />
-                </IconButton>
+
+              {/* Detail item dengan nama dan harga di satu baris */}
+              <Box sx={{ flex: 1, textAlign: 'left' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
+                  <Typography sx={{fontWeight: 'bold', fontSize: '0.975rem' }} variant="h6">{item.title}</Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 'regular', fontSize: '0.875rem' }}>
+                    {`Rp ${item.harga.toLocaleString()}`}
+                  </Typography>
+                </Box>
+
+                {/* Varian dan counter di satu baris */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{
+                    backgroundColor: '#f0f0f0',
+                    borderRadius: 1,
+                    px: 1,
+                    py: 0.5,
+                    display: 'inline-block',
+                  }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {item.variant_title}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{
+                    backgroundColor: '#f0f0f0',
+                    borderRadius: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    px: 0.5,
+                    py: 0.25,
+                  }}>
+                    <IconButton onClick={() => handleQuantityChange(item.id_cart_resto, -1)} color="inherit" size="small">
+                      <RemoveIcon fontSize="inherit" />
+                    </IconButton>
+                    <Typography variant="body2" sx={{ mx: 0.5 }}>{item.quantity}</Typography>
+                    <IconButton onClick={() => handleQuantityChange(item.id_cart_resto, 1)} color="inherit" size="small">
+                      <AddIcon fontSize="inherit" />
+                    </IconButton>
+                  </Box>
+                </Box>
               </Box>
-            </Paper>
+            </Box>
           ))
         ) : (
           <Typography variant="body1" color="text.secondary">

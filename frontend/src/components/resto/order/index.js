@@ -7,7 +7,6 @@ import Navbar from './Navbar';
 import ItemList from './ItemList';
 import DetailModal from './DetailModal';
 import CartModal from './VariantModal';
-import BottomNav from './BottomNav';
 import { useParams } from 'react-router-dom'; // Import useParams
 
 function RestoItems() {
@@ -20,7 +19,6 @@ function RestoItems() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [variants, setVariants] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const totalPrice = 3000000; // contoh total harga yang ditampilkan
   const [photo, setPhoto] = useState('');
   const [base_price, setPrice] = useState('');
   const [title, setTitle] = useState('');
@@ -153,7 +151,6 @@ function RestoItems() {
       <Box sx={{ flex: 1, overflowY: 'auto' }}>
         <ItemList items={filteredItems} onOpenDetail={handleOpenDetail} onCartClick={handleCartClick} />
       </Box>
-      <BottomNav totalPrice={totalPrice} />
 
       <DetailModal open={openDetailModal} onClose={handleCloseDetail} selectedItem={selectedItem} />
       <CartModal open={openCartModal} onClose={handleCloseCart} variants={variants} photo={photo} base_price={base_price} profile_id={id} id_resto_item={id_resto_item} title={title} />
