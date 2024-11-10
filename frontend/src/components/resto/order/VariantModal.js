@@ -3,7 +3,8 @@ import { Modal, Box, Typography, IconButton, Button, ButtonGroup } from '@mui/ma
 import CloseIcon from '@mui/icons-material/Close';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate } from 'react-router-dom';
-import { addItemToCart, getCartItems, updateItemQuantity, getTotalPrice } from './cart/cartDB';
+import { addItemToCart, getCartItems, updateItemQuantity, getTotalPrice, getTotalQuantity } from './cart/cartDB';
+import { useParams } from 'react-router-dom';
 
 function CartModal({ open, onClose, variants, photo, base_price, profile_id, id_resto_item, title }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -24,10 +25,22 @@ function CartModal({ open, onClose, variants, photo, base_price, profile_id, id_
     fetchTotalPrice();
   }, []);
 
+  useEffect(() => {
+    const fetchTotalQuantity = async () => {
+      const quantity = await getTotalQuantity();
+      setTotalQuantity(quantity);
+    };
+    fetchTotalQuantity();
+  }, [cartItems]); // Dependensi pada cartItems untuk meng-update saat item berubah
+
+
   const fetchTotalPrice = async () => {
     const total = await getTotalPrice();
     setTotalPrice(total);
   };
+
+  const [totalQuantity, setTotalQuantity] = useState(0);
+
 
   const handleVariantSelect = (variant) => {
     setSelectedVariant(variant);
@@ -61,16 +74,21 @@ function CartModal({ open, onClose, variants, photo, base_price, profile_id, id_
           harga: selectedVariant && selectedVariant.title !== "Original"
             ? (base_price + selectedVariant.extra_price) * quantity
             : base_price * quantity,
-            photo
+          photo
         });
       }
       fetchTotalPrice();
+      const newTotalQuantity = await getTotalQuantity();
+      setTotalQuantity(newTotalQuantity); // Update total quantity setelah perubahan
       onClose();
     }
   };
 
+  const { id, notabel } = useParams();
+
   const handleCartButtonClick = () => {
-    navigate('/resto/cart');
+    // navigate('/resto/cart/:id/:notabel');
+    navigate(`/resto/cart/${id}/${notabel}`);
   };
 
   return (
@@ -183,9 +201,24 @@ function CartModal({ open, onClose, variants, photo, base_price, profile_id, id_
         justifyContent: 'space-between',
         zIndex: 1000,
       }}>
-        <IconButton>
+        <IconButton onClick={handleCartButtonClick}>
           <ShoppingCartIcon sx={{ color: '#1976d2' }} />
+          {totalQuantity > 0 && (
+            <span style={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              backgroundColor: 'red',
+              color: 'white',
+              borderRadius: '50%',
+              padding: '2px 6px',
+              fontSize: '0.75rem',
+            }}>
+              {totalQuantity}
+            </span>
+          )}
         </IconButton>
+
         <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
           Rp {totalPrice.toLocaleString('id-ID')}
         </Typography>

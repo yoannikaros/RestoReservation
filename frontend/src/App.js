@@ -17,7 +17,7 @@ function App() {
           <Route path="/resto/order/:id/:notabel" element={<RestoItems />} />
 
             {/* Route untuk halaman Cart Resto */}
-            <Route path="/resto/cart" element={<RestoCartItems />} />
+            <Route path="/resto/cart/:id/:notabel" element={<RestoCartItems />} />
         </Routes>
       </div>
     </Router>

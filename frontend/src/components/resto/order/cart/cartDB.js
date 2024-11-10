@@ -24,6 +24,17 @@ export const addItemToCart = async (item) => {
   return db.add('cart', item);
 };
 
+// Fungsi untuk menghitung total quantity dari semua item di dalam database
+export const getTotalQuantity = async () => {
+  const db = await dbPromise;
+  const items = await db.getAll('cart');
+  
+  // Menghitung total quantity
+  const totalQuantity = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  return totalQuantity;
+};
+
+
 // Fungsi untuk menghitung total harga dari semua item di dalam database
 export const getTotalPrice = async () => {
   const db = await dbPromise;
@@ -33,7 +44,6 @@ export const getTotalPrice = async () => {
   const total = items.reduce((sum, item) => sum + (item.harga * (item.quantity || 1)), 0);
   return total;
 };
-
 
 // Fungsi untuk mengambil semua item dari database
 export const getCartItems = async () => {
