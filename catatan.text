@@ -1,3 +1,6 @@
 
 printah terimanal:
 mode produksi front-end: npm run build --prefix frontend
+
+
+key: date sekarang - id pengguna - nkrs

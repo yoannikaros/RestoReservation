@@ -5,7 +5,7 @@ function LandingPage() {
     <div>
       <h1>Selamat Datang di Resto App</h1>
       <p>Ini adalah aplikasi untuk melihat data barang restoran.</p>
-      <a href="/resto/order">Lihat Data Barang</a>
+      <a href="/resto/order/1/231">Lihat Data Barang</a>
     </div>
   );
 }

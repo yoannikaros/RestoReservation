@@ -1,9 +1,27 @@
-// src/components/BottomNav.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, IconButton, Typography, Button } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useNavigate } from 'react-router-dom';
+import { getTotalPrice } from './cart/cartDB'; // Import fungsi getTotalPrice
 
-function BottomNav({ totalPrice }) {
+function BottomNav() {
+  const [totalPrice, setTotalPrice] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchTotalPrice = async () => {
+      const total = await getTotalPrice();
+      setTotalPrice(total);
+    };
+    
+    fetchTotalPrice();
+  }, []);  // Dependency array kosong untuk menjalankan sekali saat komponen dirender
+
+  // Fungsi untuk navigasi ke halaman /resto/cart
+  const handleCartButtonClick = () => {
+    navigate('/resto/cart');
+  };
+
   return (
     <Box sx={{
       position: 'fixed',
@@ -22,7 +40,7 @@ function BottomNav({ totalPrice }) {
         <ShoppingCartIcon sx={{ color: '#1976d2' }} />
       </IconButton>
       <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-        Rp{totalPrice.toLocaleString('id-ID')}
+        Rp {totalPrice.toLocaleString('id-ID')}
       </Typography>
       <Button
         variant="contained"
@@ -32,6 +50,7 @@ function BottomNav({ totalPrice }) {
           borderRadius: '20px',
           '&:hover': { backgroundColor: '#1565c0' },
         }}
+        onClick={handleCartButtonClick}
       >
         View Cart
       </Button>

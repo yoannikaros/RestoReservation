@@ -10,10 +10,9 @@ import CartModal from './VariantModal';
 import BottomNav from './BottomNav';
 import { useParams } from 'react-router-dom'; // Import useParams
 
-
 function RestoItems() {
   const [items, setItems] = useState([]);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openDetailModal, setOpenDetailModal] = useState(false);
@@ -24,9 +23,12 @@ function RestoItems() {
   const totalPrice = 3000000; // contoh total harga yang ditampilkan
   const [photo, setPhoto] = useState('');
   const [base_price, setPrice] = useState('');
-  const [id_resto_item , setIdItem] = useState('');
+  const [title, setTitle] = useState('');
+  const [id_resto_item, setIdItem] = useState('');
   const [selectedVariant, setSelectedVariant] = useState(null);
   const { id, notabel } = useParams(); // Get both id and notabel from URL
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,6 +61,8 @@ function RestoItems() {
       let photoUrl = '';
       let priceBase = '';
       let idItem = '';
+      let TitleItem = '';
+
       try {
         const variantResponse = await axios.get(`http://localhost:3000/api/variants/resto_item/${id}`);
         fetchedVariants = variantResponse.data;
@@ -68,6 +72,7 @@ function RestoItems() {
         photoUrl = item.photo; // Ambil URL foto dari data item
         priceBase = item.base_price;
         idItem = id;
+        TitleItem = item.title;
 
       } catch (variantError) {
         if (variantError.response && variantError.response.status === 404) {
@@ -85,6 +90,7 @@ function RestoItems() {
         photoUrl = item.photo; // Ambil URL foto dari data item
         priceBase = item.base_price;
         idItem = id;
+        TitleItem = item.title;
 
         setVariants([{ title: "Original", extra_price: item.base_price }]);
 
@@ -93,6 +99,7 @@ function RestoItems() {
       setPhoto(photoUrl); // Set state untuk menyimpan URL foto
       setPrice(priceBase);
       setIdItem(idItem);
+      setTitle(TitleItem);
 
       setOpenCartModal(true);
     } catch (error) {
@@ -114,6 +121,7 @@ function RestoItems() {
 
   };
 
+
   const filteredItems = items.filter(item =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -131,25 +139,25 @@ function RestoItems() {
   );
 
   return (
-// RestoItems.js
+    // RestoItems.js
 
-<Box 
-  sx={{ 
-    height: '100vh', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    overflowY: 'hidden' 
-  }}
->
-  <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-  <Box sx={{ flex: 1, overflowY: 'auto' }}>
-    <ItemList items={filteredItems} onOpenDetail={handleOpenDetail} onCartClick={handleCartClick} />
-  </Box>
-  <BottomNav totalPrice={totalPrice} />
-  
-  <DetailModal open={openDetailModal} onClose={handleCloseDetail} selectedItem={selectedItem} />
-  <CartModal open={openCartModal} onClose={handleCloseCart} variants={variants} photo={photo} base_price={base_price} profile_id={id} id_resto_item={id_resto_item} />
-</Box>
+    <Box
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        overflowY: 'hidden'
+      }}
+    >
+      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <Box sx={{ flex: 1, overflowY: 'auto' }}>
+        <ItemList items={filteredItems} onOpenDetail={handleOpenDetail} onCartClick={handleCartClick} />
+      </Box>
+      <BottomNav totalPrice={totalPrice} />
+
+      <DetailModal open={openDetailModal} onClose={handleCloseDetail} selectedItem={selectedItem} />
+      <CartModal open={openCartModal} onClose={handleCloseCart} variants={variants} photo={photo} base_price={base_price} profile_id={id} id_resto_item={id_resto_item} title={title} />
+    </Box>
 
 
   );
