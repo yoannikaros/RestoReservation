@@ -35,12 +35,12 @@ const getCartByProfileId = async (profile_id) => {
   };
   
   const addToCart = async (cartData) => {
-    const { profile_id, id_resto_item, variant_id, quantity, note, status } = cartData;
+    const { profile_id, no_trans, id_resto_item, variant_id, quantity, note, status } = cartData;
     const query = `
-      INSERT INTO resto_cart (profile_id, id_resto_item, variant_id, quantity, note, status)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO resto_cart (profile_id,no_trans, id_resto_item, variant_id, quantity, note, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
-    const [result] = await pool.execute(query, [profile_id, id_resto_item, variant_id, quantity, note, status]);
+    const [result] = await pool.execute(query, [profile_id, no_trans, id_resto_item, variant_id, quantity, note, status]);
     return result.insertId;
   };
   
@@ -64,6 +64,12 @@ const getCartByProfileId = async (profile_id) => {
     const [result] = await pool.execute(query, [id_cart_resto]);
     return result.affectedRows;
   };
+
+  const getLastTransactionNumber = async () => {
+    const query = `SELECT no_trans FROM resto_cart ORDER BY id_cart_resto DESC LIMIT 1`;
+    const [rows] = await pool.execute(query);
+    return rows.length > 0 ? rows[0].no_trans : null;
+  };
   
   module.exports = {
     getCartByProfileId,
@@ -71,4 +77,5 @@ const getCartByProfileId = async (profile_id) => {
     addToCart,
     updateQuantity,
     deleteCartItem,
+    getLastTransactionNumber
   };

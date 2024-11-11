@@ -176,7 +176,7 @@ function CartList() {
         )}
       </Box>
 
-      <BottomNav totalPrice={totalPrice} />
+      <BottomNav totalPrice={totalPrice} orderType={orderType} notabel={notabel} />
     </>
   );
 }

@@ -36,11 +36,11 @@ const RestoOrder = {
 
   // Membuat order baru
   async create(order) {
-    const { id_cart_resto, total_price, balance, amount, no_table, service, status, payment_id } = order;
+    const { profile_id, id_cart_resto, total_price, balance, amount, no_table, service, status, payment_id } = order;
     const [result] = await pool.query(
-      `INSERT INTO resto_order (id_cart_resto, total_price, balance, amount, no_table, service, status, created_at, payment_id)
+      `INSERT INTO resto_order (profile_id, id_cart_resto,total_price, balance, amount, no_table, service, status, created_at, payment_id)
        VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)`,
-      [id_cart_resto, total_price, balance, amount, no_table, service, status, payment_id]
+      [profile_id, id_cart_resto, total_price, balance, amount, no_table, service, status, payment_id]
     );
     return result.insertId;
   },

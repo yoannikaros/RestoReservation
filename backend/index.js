@@ -11,6 +11,7 @@ const categoryRoutes = require('./routes/resto/categoryRoutes');
 const RestoTableRoutes = require('./routes/resto/RestoTableRoutes');
 const historyRoutes = require('./routes/resto/historyRoutes');
 const paymentRoutes = require('./routes/resto/paymentRoutes');
+const restoSettingsRoutes = require('./routes/resto/restoSettingsRoutes');
 
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api', categoryRoutes);
 app.use('/api', RestoTableRoutes);
 app.use('/api', historyRoutes);
 app.use('/api', paymentRoutes);
+app.use('/api', restoSettingsRoutes);
 
 // Menyajikan static files React dari folder build
 app.use(express.static(path.join(__dirname, '../frontend/build')));

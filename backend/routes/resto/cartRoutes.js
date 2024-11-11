@@ -7,6 +7,7 @@ router.get('/cart/profile/:profile_id', CartController.getCartByProfileId);
 router.post('/cart', CartController.addToCart);
 router.put('/cart/:id_cart_resto', CartController.updateQuantity);
 router.delete('/cart/:id_cart_resto', CartController.deleteCartItem);
+router.get('/cart/last', CartController.getLastTransaction);
 
 
 module.exports = router;
