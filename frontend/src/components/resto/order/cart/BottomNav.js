@@ -5,7 +5,7 @@ import { submitCartToApi } from './cartApi'; // Import the function to handle su
 function BottomNav({ totalPrice, orderType, notabel }) {
   const handleSubmit = async () => {
     try {
-      await submitCartToApi();
+      await submitCartToApi(notabel);
       alert('Cart successfully submitted');
     } catch (error) {
       console.error('Failed to submit cart:', error);

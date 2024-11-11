@@ -18,11 +18,12 @@ const getLastTransactionNumberFromApi = async () => {
 };
 
 // Fungsi untuk menambah angka di akhir nomor transaksi
-const incrementTransactionNumber = (lastTrans) => {
-  const [prefix, number] = lastTrans.split('-');
+const incrementTransactionNumber = (lastTrans, prefix) => {
+  const [, number] = lastTrans.split('-');
   const incrementedNumber = parseInt(number, 10) + 1;
   return `${prefix}-${incrementedNumber}`;
 };
+
 
 // Fungsi untuk mengambil semua item dari IndexedDB
 const getCartItemsFromIDB = async () => {
@@ -31,7 +32,7 @@ const getCartItemsFromIDB = async () => {
 };
 
 // Fungsi untuk submit setiap item keranjang ke API
-export const submitCartToApi = async () => {
+export const submitCartToApi = async (notabel) => {
   const cartItems = await getCartItemsFromIDB();
   if (!cartItems.length) {
     throw new Error('No items in cart to submit.');
@@ -42,7 +43,9 @@ export const submitCartToApi = async () => {
   if (!lastTrans) {
     throw new Error('No last transaction number found.');
   }
-  const newTransactionNumber = incrementTransactionNumber(lastTrans);
+  
+  // Gunakan `notabel` sebagai prefix baru
+  const newTransactionNumber = incrementTransactionNumber(lastTrans, notabel);
 
   // Submit setiap item keranjang ke API
   const submitItem = async (item) => {
