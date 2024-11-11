@@ -2,28 +2,58 @@ import { openDB } from 'idb';
 
 const API_URL = 'http://localhost:3000/api/cart';
 
-// Function to retrieve all items from the IndexedDB
+// Fungsi untuk mengambil nomor transaksi terakhir dari endpoint API
+const getLastTransactionNumberFromApi = async () => {
+  try {
+    const response = await fetch(`${API_URL}/last`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch last transaction number.');
+    }
+    const data = await response.json();
+    return data.lastTrans; // Mengambil lastTrans dari respons
+  } catch (error) {
+    console.error('Error fetching last transaction:', error);
+    return null;
+  }
+};
+
+// Fungsi untuk menambah angka di akhir nomor transaksi
+const incrementTransactionNumber = (lastTrans) => {
+  const [prefix, number] = lastTrans.split('-');
+  const incrementedNumber = parseInt(number, 10) + 1;
+  return `${prefix}-${incrementedNumber}`;
+};
+
+// Fungsi untuk mengambil semua item dari IndexedDB
 const getCartItemsFromIDB = async () => {
   const db = await openDB('cartDB', 1);
   return await db.getAll('cart');
 };
 
-// Function to submit each cart item to the API
+// Fungsi untuk submit setiap item keranjang ke API
 export const submitCartToApi = async () => {
   const cartItems = await getCartItemsFromIDB();
   if (!cartItems.length) {
     throw new Error('No items in cart to submit.');
   }
 
+  // Ambil nomor transaksi terakhir dan tambah 1
+  const lastTrans = await getLastTransactionNumberFromApi();
+  if (!lastTrans) {
+    throw new Error('No last transaction number found.');
+  }
+  const newTransactionNumber = incrementTransactionNumber(lastTrans);
+
+  // Submit setiap item keranjang ke API
   const submitItem = async (item) => {
     const cartData = {
       profile_id: item.profile_id,
       id_resto_item: item.id_resto_item,
       variant_id: item.variant_id || 0,
       quantity: item.quantity,
-      note: item.note || '', // use an empty string if no note
-      status: item.status || 'pending', // default to 'pending' if status is missing
-      no_trans : 1
+      note: item.note || '', // gunakan string kosong jika tidak ada catatan
+      status: item.status || 'pending', // default ke 'pending' jika status tidak ada
+      no_trans: newTransactionNumber // Gunakan nomor transaksi terbaru
     };
 
     const response = await fetch(API_URL, {
@@ -39,7 +69,7 @@ export const submitCartToApi = async () => {
     }
   };
 
-  // Loop through all cart items and submit each one
+  // Loop melalui semua item keranjang dan submit masing-masing
   for (const item of cartItems) {
     await submitItem(item);
   }

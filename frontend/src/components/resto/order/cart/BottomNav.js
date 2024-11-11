@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { submitCartToApi } from './cartApi'; // Import the function to handle submission
 
-function BottomNav({ totalPrice }) {
+function BottomNav({ totalPrice, orderType, notabel }) {
   const handleSubmit = async () => {
     try {
       await submitCartToApi();
