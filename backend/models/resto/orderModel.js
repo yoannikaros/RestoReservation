@@ -35,15 +35,19 @@ const RestoOrder = {
   },
 
   // Membuat order baru
-  async create(order) {
-    const { profile_id, id_cart_resto, total_price, balance, amount, no_table, service, status, payment_id } = order;
-    const [result] = await pool.query(
-      `INSERT INTO resto_order (profile_id, id_cart_resto,total_price, balance, amount, no_table, service, status, created_at, payment_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)`,
-      [profile_id, id_cart_resto, total_price, balance, amount, no_table, service, status, payment_id]
-    );
-    return result.insertId;
-  },
+async create(order) {
+  const { profile_id, id_cart_resto, total_price, balance, amount, no_table, service, status, payment_id } = order;
+
+  // Buat kueri SQL
+  const [result] = await pool.query(
+    `INSERT INTO resto_order (profile_id, id_cart_resto, total_price, balance, amount, no_table, service, status, created_at, payment_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)`,
+    [profile_id, id_cart_resto, total_price, balance, amount, no_table, service, status, payment_id]
+  );
+
+  return result.insertId;
+},
+
 
   // Mengupdate order berdasarkan `id_order`
   async update(id, order) {

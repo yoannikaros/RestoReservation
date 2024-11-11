@@ -55,7 +55,7 @@ exports.createOrder = async (req, res) => {
     const id = await RestoOrder.create(req.body);
     res.status(201).json({ message: 'Order berhasil dibuat', id });
   } catch (error) {
-    res.status(500).json({ error: 'Gagal membuat order baru' });
+    res.status(500).json({ error: 'Gagal membuat order baru', error: error.message  });
   }
 };
 

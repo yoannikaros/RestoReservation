@@ -1,11 +1,19 @@
 import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
-import { submitCartToApi } from './cartApi'; // Import the function to handle submission
+import { submitCartToApi } from './cartApi'; // Import submitCartToApi
+import { submitOrderApi } from './orderApi'; // Import submitOrderApi
 
 function BottomNav({ totalPrice, orderType, notabel }) {
   const handleSubmit = async () => {
     try {
-      await submitCartToApi(notabel);
+      // Panggil submitCartToApi dan simpan nilai newTransactionNumber yang dikembalikan
+      const noTrans = await submitCartToApi(notabel);
+
+      console.log(noTrans);
+      
+      // Kirimkan noTrans sebagai id_cart_resto ke submitOrderApi
+      await submitOrderApi(notabel, totalPrice, orderType, noTrans);
+      
       alert('Cart successfully submitted');
     } catch (error) {
       console.error('Failed to submit cart:', error);
@@ -27,8 +35,12 @@ function BottomNav({ totalPrice, orderType, notabel }) {
       justifyContent: 'space-between',
       alignItems: 'center'
     }}>
-      <Typography sx={{ fontWeight: 'bold', color: '#1976d2' }} variant="h6"> Rp {totalPrice.toLocaleString('id-ID')}</Typography>
-      <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
+      <Typography sx={{ fontWeight: 'bold', color: '#1976d2' }} variant="h6">
+        Rp {totalPrice.toLocaleString('id-ID')}
+      </Typography>
+      <Button variant="contained" color="primary" onClick={handleSubmit}>
+        Submit
+      </Button>
     </Box>
   );
 }
