@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, CircularProgress, Typography } from '@mui/material';
-
+import CategoryModal from './CategoryModal';
 import Navbar from './Navbar';
 import ItemList from './ItemList';
 import DetailModal from './DetailModal';
@@ -25,7 +25,30 @@ function RestoItems() {
   const [id_resto_item, setIdItem] = useState('');
   const [selectedVariant, setSelectedVariant] = useState(null);
   const { id, notabel } = useParams(); // Get both id and notabel from URL
+  const [categories, setCategories] = useState([]);
+  const [openCategoryModal, setOpenCategoryModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
+  // Fungsi untuk mem-filter item berdasarkan kategori yang dipilih
+  const handleCategorySelect = (categoryTitle) => {
+    setSelectedCategory(categoryTitle);
+    setOpenCategoryModal(false);
+  };
+
+
+  const handleOpenCategoryModal = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/categories/profile/${id}`);
+      setCategories(response.data);
+      setOpenCategoryModal(true);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const handleCloseCategoryModal = () => {
+    setOpenCategoryModal(false);
+  };
 
 
   useEffect(() => {
@@ -119,8 +142,9 @@ function RestoItems() {
 
   };
 
-
+  // Filter items berdasarkan kategori yang dipilih atau berdasarkan searchQuery
   const filteredItems = items.filter(item =>
+    (selectedCategory ? item.category === selectedCategory : true) &&
     item.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -147,13 +171,20 @@ function RestoItems() {
         overflowY: 'hidden'
       }}
     >
-      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleOpenCategoryModal={handleOpenCategoryModal}/>
       <Box sx={{ flex: 1, overflowY: 'auto' }}>
         <ItemList items={filteredItems} onOpenDetail={handleOpenDetail} onCartClick={handleCartClick} />
       </Box>
 
       <DetailModal open={openDetailModal} onClose={handleCloseDetail} selectedItem={selectedItem} />
       <CartModal open={openCartModal} onClose={handleCloseCart} variants={variants} photo={photo} base_price={base_price} profile_id={id} id_resto_item={id_resto_item} title={title} />
+      {/* Render CategoryModal */}
+      <CategoryModal
+        open={openCategoryModal}
+        onClose={handleCloseCategoryModal}
+        categories={categories}
+        onSelectCategory={handleCategorySelect}
+      />
     </Box>
 
 

@@ -4,7 +4,7 @@ import { AppBar, Toolbar, InputBase, Box, Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
 
-function Navbar({ searchQuery, setSearchQuery }) {
+function Navbar({ searchQuery, setSearchQuery, handleOpenCategoryModal }) {  // Tambahkan handleOpenCategoryModal di sini
   return (
     <AppBar position="sticky" sx={{ backgroundColor: '#1976d2' }}>
       <Toolbar>
@@ -20,6 +20,7 @@ function Navbar({ searchQuery, setSearchQuery }) {
         <Button
           variant="contained"
           startIcon={<MenuIcon />}
+          onClick={handleOpenCategoryModal}  // Gunakan handleOpenCategoryModal di sini
           sx={{
             marginLeft: 2,
             backgroundColor: '#ffffff',
