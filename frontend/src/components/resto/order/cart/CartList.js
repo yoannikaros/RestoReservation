@@ -6,6 +6,8 @@ import Navbar from './Navbar';
 import BottomNav from './BottomNav';
 import { getCartItems, updateItemQuantity, deleteItemFromCart,updateItemNote } from './cartDB';
 import { useParams } from 'react-router-dom';
+import { getOrderId } from '../orderDB'; // Import fungsi baru
+import { useNavigate } from 'react-router-dom';
 
 function CartList() {
   const { id, notabel } = useParams();
@@ -14,6 +16,31 @@ function CartList() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [showAllItems, setShowAllItems] = useState(false);
   const [notes, setNotes] = useState({});
+  const navigate = useNavigate();
+  
+  const checkOrder = async () => {
+    try {
+      // Ambil id_order dari cart
+      const idOrder = await getOrderId();
+      
+      // Periksa apakah idOrder valid
+      if (!idOrder) {
+        console.error('ID Order tidak ditemukan.');
+        return;
+      }
+  
+      // Lakukan permintaan untuk mengecek status menggunakan idOrder
+      const response = await fetch(`http://localhost:3000/api/order/status/${idOrder}`);
+      const data = await response.json();
+      
+      if (data.status === 'pending') {
+        navigate('/resto/order/barcode', { state: { idOrder: idOrder } });
+      } 
+    } catch (error) {
+      console.error('Error fetching status:', error);
+      alert('Gagal mengecek status.');
+    }
+  };
 
   const loadCartItems = async () => {
     const items = await getCartItems();
@@ -41,6 +68,7 @@ function CartList() {
 
   useEffect(() => {
     loadCartItems();
+    checkOrder();
   }, []);
 
   return (

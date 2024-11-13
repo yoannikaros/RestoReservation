@@ -8,6 +8,8 @@ import ItemList from './ItemList';
 import DetailModal from './DetailModal';
 import CartModal from './VariantModal';
 import { useParams } from 'react-router-dom'; // Import useParams
+import { useNavigate } from 'react-router-dom';
+import { getOrderId } from './orderDB'; // Import fungsi baru
 
 function RestoItems() {
   const [items, setItems] = useState([]);
@@ -28,6 +30,8 @@ function RestoItems() {
   const [categories, setCategories] = useState([]);
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const navigate = useNavigate();
+
 
   // Fungsi untuk mem-filter item berdasarkan kategori yang dipilih
   const handleCategorySelect = (categoryTitle) => {
@@ -35,7 +39,31 @@ function RestoItems() {
     setOpenCategoryModal(false);
   };
 
+  const checkOrder = async () => {
+    try {
+      // Ambil id_order dari cart
+      const idOrder = await getOrderId();
+      
+      // Periksa apakah idOrder valid
+      if (!idOrder) {
+        console.error('ID Order tidak ditemukan.');
+        return;
+      }
+  
+      // Lakukan permintaan untuk mengecek status menggunakan idOrder
+      const response = await fetch(`http://localhost:3000/api/order/status/${idOrder}`);
+      const data = await response.json();
+      
+      if (data.status === 'pending') {
+        navigate('/resto/order/barcode', { state: { idOrder: idOrder } });
+      } 
+    } catch (error) {
+      console.error('Error fetching status:', error);
+      alert('Gagal mengecek status.');
+    }
+  };
 
+  
   const handleOpenCategoryModal = async () => {
     try {
       const response = await axios.get(`http://localhost:3000/api/categories/profile/${id}`);
@@ -54,6 +82,7 @@ function RestoItems() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        await checkOrder(); 
         const response = await axios.get(`http://localhost:3000/api/resto_items/profile/${id}`);
         setItems(response.data.results.resto_item);
         setLoading(false);

@@ -4,7 +4,7 @@ import { submitCartToApi } from './cartApi'; // Import submitCartToApi
 import { submitOrderApi } from './orderApi'; // Import submitOrderApi
 import { getProfileIdFromCart } from './cartDB'; // Import fungsi baru
 import { useNavigate } from 'react-router-dom';
-
+import { saveOrderId } from '../orderDB'; // Import fungsi baru
 
 function BottomNav({ totalPrice, orderType, notabel }) {
   const [loading, setLoading] = useState(false); // State untuk melacak status loading
@@ -43,6 +43,9 @@ function BottomNav({ totalPrice, orderType, notabel }) {
       // Kirimkan noTrans sebagai id_cart_resto ke submitOrderApi dan simpan id_order yang dikembalikan
       const Idorder = await submitOrderApi(notabel, totalPrice, orderType, noTrans);
       
+      // Setelah id_order berhasil didapatkan, simpan di IndexedDB
+      await saveOrderId(Idorder);
+
       await fetchServeTypeAndRedirect(profileId, Idorder);
 
       //alert('Order successfully submitted');
