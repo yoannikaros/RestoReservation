@@ -53,11 +53,14 @@ exports.getDetailsByCartAndPayment = async (req, res) => {
 exports.createOrder = async (req, res) => {
   try {
     const id = await RestoOrder.create(req.body);
-    res.status(201).json({ message: 'Order berhasil dibuat', id });
+    
+    // Ubah id menjadi id_order dalam respons agar sesuai dengan yang diharapkan frontend
+    res.status(201).json({ message: 'Order berhasil dibuat', id_order: id });
   } catch (error) {
-    res.status(500).json({ error: 'Gagal membuat order baru', error: error.message  });
+    res.status(500).json({ error: 'Gagal membuat order baru' });
   }
 };
+
 
 // Mengupdate order
 exports.updateOrder = async (req, res) => {

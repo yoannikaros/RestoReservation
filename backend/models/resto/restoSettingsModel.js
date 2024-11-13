@@ -14,19 +14,19 @@ async function getSettingsByProfileId(profile_id) {
 }
 
 // Menambahkan data baru ke resto_settings
-async function createSetting(profile_id, ScanServePay, ScanPayServe) {
+async function createSetting(profile_id, serveType) {
   const [result] = await pool.query(
-    'INSERT INTO resto_settings (profile_id, ScanServePay, ScanPayServe) VALUES (?, ?, ?)',
-    [profile_id, ScanServePay, ScanPayServe]
+    'INSERT INTO resto_settings (profile_id, serveType) VALUES (?, ?, ?)',
+    [profile_id, serveType]
   );
-  return { id_setting: result.insertId, profile_id, ScanServePay, ScanPayServe };
+  return { id_setting: result.insertId, profile_id, serveType };
 }
 
 // Memperbarui data berdasarkan id_setting
-async function updateSetting(id_setting, profile_id, ScanServePay, ScanPayServe) {
+async function updateSetting(id_setting, profile_id, serveType) {
   const [result] = await pool.query(
-    'UPDATE resto_settings SET profile_id = ?, ScanServePay = ?, ScanPayServe = ? WHERE id_setting = ?',
-    [profile_id, ScanServePay, ScanPayServe, id_setting]
+    'UPDATE resto_settings SET profile_id = ?, serveType = ? WHERE id_setting = ?',
+    [profile_id, serveType, id_setting]
   );
   return result.affectedRows;
 }

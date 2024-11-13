@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LandingPage from './components/landingpage/LandingPage';
 import RestoItems from './components/resto/order/index.js';
 import RestoCartItems from './components/resto/order/cart/CartList.js';
-
+import BarcodePage from './components/resto/order/barcode/BarcodePage'; // Komponen di file B
 function App() {
   return (
     <Router>
@@ -18,6 +18,9 @@ function App() {
 
             {/* Route untuk halaman Cart Resto */}
             <Route path="/resto/cart/:id/:notabel" element={<RestoCartItems />} />
+           
+            <Route path="/resto/order/barcode" element={<BarcodePage />} />
+            
         </Routes>
       </div>
     </Router>

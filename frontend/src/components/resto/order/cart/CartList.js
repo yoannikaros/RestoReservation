@@ -4,7 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Navbar from './Navbar';
 import BottomNav from './BottomNav';
-import { getCartItems, updateItemQuantity, deleteItemFromCart } from './cartDB';
+import { getCartItems, updateItemQuantity, deleteItemFromCart,updateItemNote } from './cartDB';
 import { useParams } from 'react-router-dom';
 
 function CartList() {
@@ -13,6 +13,7 @@ function CartList() {
   const [orderType, setOrderType] = useState('Dine-in');
   const [totalPrice, setTotalPrice] = useState(0);
   const [showAllItems, setShowAllItems] = useState(false);
+  const [notes, setNotes] = useState({});
 
   const loadCartItems = async () => {
     const items = await getCartItems();
@@ -108,7 +109,7 @@ function CartList() {
 
                   <Box sx={{ flex: 1, textAlign: 'left' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                      <Typography sx={{fontWeight: 'bold', fontSize: '0.975rem' }} variant="h6">{item.title}</Typography>
+                      <Typography sx={{ fontWeight: 'bold', fontSize: '0.975rem' }} variant="h6">{item.title}</Typography>
                       <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 'regular', fontSize: '0.875rem' }}>
                         {`Rp ${item.harga.toLocaleString()}`}
                       </Typography>
@@ -155,6 +156,12 @@ function CartList() {
                   fullWidth
                   sx={{ mt: 1 }}
                   placeholder="Tambah catatan untuk item ini"
+                  value={notes[item.id_cart_resto] || item.note || ''} // Isi dari notes atau note di IDB
+                  onChange={(e) => setNotes({ ...notes, [item.id_cart_resto]: e.target.value })} // Update notes sementara
+                  onBlur={async () => { // Simpan saat blur
+                    await updateItemNote(item.id_cart_resto, notes[item.id_cart_resto]);
+                    loadCartItems(); // Refresh data untuk memperlihatkan catatan terbaru
+                  }}
                 />
               </Box>
             ))}

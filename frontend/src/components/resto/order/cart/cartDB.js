@@ -15,8 +15,33 @@ const dbPromise = openDB('cartDB', 1, {
     store.createIndex('variant_title', 'variant_title');
     store.createIndex('harga', 'harga');
     store.createIndex('photo', 'photo');
+    store.createIndex('note', 'note'); // Tambahkan index baru untuk catatan
   },
 });
+
+// Fungsi untuk mengambil profile_id dari cart
+export const getProfileIdFromCart = async () => {
+  const db = await dbPromise;
+  const items = await db.getAll('cart');
+  
+  // Mengambil profile_id dari salah satu item di dalam cart
+  if (items.length > 0) {
+    return items[0].profile_id; // Ambil profile_id dari item pertama
+  }
+  return null; // Jika cart kosong
+};
+
+
+// Fungsi untuk memperbarui catatan item
+export const updateItemNote = async (id, note) => {
+  const db = await dbPromise;
+  const item = await db.get('cart', id);
+  if (item) {
+    item.note = note;
+    return db.put('cart', item);
+  }
+};
+
 
 // Fungsi untuk menambahkan item ke dalam database
 export const addItemToCart = async (item) => {

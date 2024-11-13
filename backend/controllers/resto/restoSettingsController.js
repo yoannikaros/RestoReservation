@@ -28,9 +28,9 @@ async function getSettingsByProfileId(req, res) {
 
 // Menambahkan data baru
 async function createSetting(req, res) {
-  const { profile_id, ScanServePay, ScanPayServe } = req.body;
+  const { profile_id, serveType } = req.body;
   try {
-    const setting = await restoSettingsModel.createSetting(profile_id, ScanServePay, ScanPayServe);
+    const setting = await restoSettingsModel.createSetting(profile_id, serveType);
     res.status(201).json(setting);
   } catch (error) {
     console.error(error);
@@ -41,9 +41,9 @@ async function createSetting(req, res) {
 // Memperbarui data
 async function updateSetting(req, res) {
   const { id_setting } = req.params;
-  const { profile_id, ScanServePay, ScanPayServe } = req.body;
+  const { profile_id, serveType } = req.body;
   try {
-    const affectedRows = await restoSettingsModel.updateSetting(id_setting, profile_id, ScanServePay, ScanPayServe);
+    const affectedRows = await restoSettingsModel.updateSetting(id_setting, profile_id, serveType);
     if (affectedRows === 0) {
       return res.status(404).json({ message: 'Data tidak ditemukan untuk id_setting ini.' });
     }
