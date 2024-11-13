@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Barcode from 'react-barcode';
 import io from 'socket.io-client';
 
 function BarcodePage() {
   const location = useLocation();
+  const navigate = useNavigate(); // Hook untuk navigasi
   const { idOrder } = location.state || {}; // Ambil idOrder dari state
   const [status, setStatus] = useState('');
   const [socket, setSocket] = useState(null);
@@ -35,6 +36,13 @@ function BarcodePage() {
       }
     };
   }, [idOrder]); // Perubahan pada idOrder akan trigger efek ini lagi
+
+  // Cek jika status sudah "paid", kemudian alihkan ke halaman lain
+  useEffect(() => {
+    if (status === 'paid') {
+      navigate('/paid-page'); // Ganti '/paid-page' dengan path tujuan Anda
+    }
+  }, [status, navigate]);
 
   // Log untuk debugging
   console.log('Current status:', status);

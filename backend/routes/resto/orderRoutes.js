@@ -18,10 +18,10 @@ router.get('/pemesanan/cart/:id_cart_resto/payment/:payment_id', restoOrderContr
 router.post('/pemesanan', restoOrderController.createOrder);
 
 // Mengupdate order berdasarkan `id_order`
-router.put('/pemesanan:id', restoOrderController.updateOrder);
+router.put('/pemesanan/:id', restoOrderController.updateOrder);
 
 // Menghapus order berdasarkan `id_order`
-router.delete('/pemesanan:id', restoOrderController.deleteOrder);
+router.delete('/pemesanan/:id', restoOrderController.deleteOrder);
 
 // Route untuk update status order berdasarkan `id_order`
 router.put('/pemesanan/status/:id', restoOrderController.updateOrderStatus);

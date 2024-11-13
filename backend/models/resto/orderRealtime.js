@@ -11,15 +11,22 @@ const getOrderStatus = async (id_order) => {
 };
 
 // Fungsi untuk mengupdate status order menjadi 'paid'
-const updateOrderStatusToPaid = async (id_order) => {
-  const [result] = await pool.query(
-    'UPDATE resto_order SET status = ? WHERE id_order = ?',
-    ['paid', id_order]
-  );
-  return result.affectedRows > 0;
+const updateOrderStatus = async (id_order, status) => {
+  const query = 'UPDATE resto_order SET status = ? WHERE id_order = ?';
+  const values = [status, id_order];
+
+  try {
+    const [result] = await pool.execute(query, values);
+    if (result.affectedRows === 0) {
+      throw new Error('Order not found');
+    }
+  } catch (error) {
+    throw new Error('Error updating order status');
+  }
 };
+
 
 module.exports = {
   getOrderStatus,
-  updateOrderStatusToPaid,
+  updateOrderStatus,
 };

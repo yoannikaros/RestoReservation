@@ -24,7 +24,7 @@ router.get('/order/realtime-status/:id_order', (req, res) => {
 });
 
 // Endpoint untuk mengupdate status order menjadi 'paid'
-router.put('/order/status/:id_order/paid', orderController.updateOrderStatusToPaid);
+router.put('/order/status/:id_order', orderController.updateOrderStatus);
 
 
 module.exports = router;
