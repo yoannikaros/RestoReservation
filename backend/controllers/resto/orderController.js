@@ -81,3 +81,33 @@ exports.deleteOrder = async (req, res) => {
     res.status(500).json({ error: 'Gagal menghapus order' });
   }
 };
+
+
+// Mendapatkan status order berdasarkan `id_order`
+exports.getOrderStatusById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = await RestoOrder.getById(id);
+    if (order) {
+      req.io.emit('statusUpdate', { id_order: id, status: order.status });
+      res.json({ status: order.status });
+    } else {
+      res.status(404).json({ error: 'Order tidak ditemukan' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal mengambil status order' });
+  }
+};
+
+// Mengupdate status order berdasarkan `id_order` dan memancarkan event statusUpdate
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    await RestoOrder.updateStatusById(id, status);
+    req.io.emit('statusUpdate', { id_order: id, status });
+    res.json({ message: 'Status order berhasil diperbarui', status });
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal memperbarui status order' });
+  }
+};

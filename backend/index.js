@@ -1,6 +1,8 @@
 // backend/index.js
 const express = require('express');
 const bodyParser = require('body-parser');
+const http = require('http');
+const socketIo = require('socket.io');
 const path = require('path'); // Tambahkan ini untuk mengakses path
 const restoItemRoutes = require('./routes/resto/restoItemRoutes');
 const cartRoutes = require('./routes/resto/cartRoutes');
@@ -12,9 +14,16 @@ const RestoTableRoutes = require('./routes/resto/RestoTableRoutes');
 const historyRoutes = require('./routes/resto/historyRoutes');
 const paymentRoutes = require('./routes/resto/paymentRoutes');
 const restoSettingsRoutes = require('./routes/resto/restoSettingsRoutes');
+const orderRealtimeRoutes = require('./routes/resto/orderRealtimeRoutes');
 
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+// Tambahkan instance io ke app, bukan hanya request
+app.set('io', io);
+
 const PORT = 3000;
 app.use(bodyParser.json());
 
@@ -29,6 +38,7 @@ app.use('/api', RestoTableRoutes);
 app.use('/api', historyRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api', restoSettingsRoutes);
+app.use('/api', orderRealtimeRoutes);
 
 // Menyajikan static files React dari folder build
 app.use(express.static(path.join(__dirname, '../frontend/build')));
@@ -39,6 +49,6 @@ app.get('*', (req, res) => {
 });
 
 // Menjalankan server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

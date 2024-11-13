@@ -49,6 +49,15 @@ async create(order) {
 },
 
 
+ // Memperbarui status order berdasarkan `id_order`
+ async updateStatusById(id, status) {
+  await pool.query(
+    'UPDATE resto_order SET status = ? WHERE id_order = ?',
+    [status, id]
+  );
+},
+
+
   // Mengupdate order berdasarkan `id_order`
   async update(id, order) {
     const { total_price, balance, amount, no_table, service, status, payment_id } = order;
@@ -63,6 +72,11 @@ async create(order) {
   async delete(id) {
     await pool.query('DELETE FROM resto_order WHERE id_order = ?', [id]);
   }
+
+  
 };
+
+
+
 
 module.exports = RestoOrder;

@@ -20,11 +20,12 @@ function BottomNav({ totalPrice, orderType, notabel }) {
 
       // Cek nilai serveType dan alihkan sesuai nilainya
       if (serveType === 1) {
+        // Bayar dulu baru makanan datang
         navigate('/resto/order/barcode', { state: { idOrder: Idorder } });
-
       } else if (serveType === 2) {
+        // Menunggu Makanan datang lalu bayar
         window.location.href = '/';
-      } else {
+      }  else {
         console.log('Nilai serveType tidak valid:', serveType);
       }
     } catch (error) {

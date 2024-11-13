@@ -23,4 +23,7 @@ router.put('/pemesanan:id', restoOrderController.updateOrder);
 // Menghapus order berdasarkan `id_order`
 router.delete('/pemesanan:id', restoOrderController.deleteOrder);
 
+// Route untuk update status order berdasarkan `id_order`
+router.put('/pemesanan/status/:id', restoOrderController.updateOrderStatus);
+
 module.exports = router;
