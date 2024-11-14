@@ -39,6 +39,13 @@ function RestoItems() {
     setOpenCategoryModal(false);
   };
 
+      // Fungsi untuk memutar musik
+      const playMusic = () => {
+        const audio = new Audio('/notif.mp3'); // Ganti dengan path musik yang sesuai
+        audio.loop = true;
+        audio.play();
+    };
+
   const checkOrder = async () => {
     try {
       // Ambil id_order dari cart
@@ -50,13 +57,19 @@ function RestoItems() {
         return;
       }
   
-      // Lakukan permintaan untuk mengecek status menggunakan idOrder
+      // Lakukan permintaan untuk mengecek status menggunakan idOrder j
       const response = await fetch(`http://localhost:3000/api/order/status/${idOrder}`);
       const data = await response.json();
       
       if (data.status === 'pending') {
         navigate('/resto/order/barcode', { state: { idOrder: idOrder } });
+      } else if (data.status === 'paid') {
+        navigate(`/resto/order/waiting`, { state: { idOrder: idOrder } });
+      } else if (data.status === 'ready') {
+        navigate(`/resto/order/waiting`, { state: { idOrder: idOrder } });
       } 
+      
+      
     } catch (error) {
       console.error('Error fetching status:', error);
       alert('Gagal mengecek status.');

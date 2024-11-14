@@ -1,0 +1,162 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+.section {
+  position: relative;
+}
+
+.section .m1 {
+  width: 11px;
+  position: absolute;
+  opacity: 0;
+  transform: translate(30px, -50px);
+  animation: 1s m1 ease-out infinite;
+}
+@keyframes m1 {
+    0%{
+        opacity: 0;
+        width: 8px;
+        transform:translate(30px, -30px) ;
+    }
+    75%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+        transform:translate(20px, -70px) ;
+    }
+}
+
+.section .m2 {
+  width: 15px;
+  position: absolute;
+  opacity: 0;
+  transform: translate(45px, -60px);
+  animation: 1s m2 ease-out infinite;
+  animation-delay: .5s;
+}
+@keyframes m2 {
+    0%{
+        opacity: 0;
+        width: 8px;
+        transform:translate(45px, -30px) ;
+    }
+    75%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+        transform:translate(45px, -70px) ;
+    }
+}
+
+.section .m3 {
+  width: 12px;
+  position: absolute;
+  opacity: 0;
+  transform: translate(65px, -45px);
+  animation: 1s m3 ease-out infinite;
+  animation-delay: .7s;
+}
+@keyframes m3 {
+    0%{
+        opacity: 0;
+        width: 8px;
+        transform:translate(65px, -30px) ;
+    }
+    75%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+        transform:translate(70px, -70px) ;
+    }
+}
+.section .f1 {
+  width: 11px;
+  position: absolute;
+  transform: translate(58px, 30px);
+  animation: 1.5s f1 linear infinite;
+}
+@keyframes f1 {
+    0%{
+        transform: translate(58px,28px);
+    }
+    50%{
+        transform: translate(58px,32px);
+    }
+    100%{
+        transform: translate(58px,28px);
+    }
+}
+
+
+.section .f2 {
+  width: 15px;
+  position: absolute;
+  transform: translate(45px, 25px);
+  animation: 2s f2 linear infinite;
+}
+@keyframes f2 {
+    0%{
+        transform: translate(45px,25px);
+    }
+    50%{
+        transform: translate(45px,29px);
+    }
+    100%{
+        transform: translate(45px,25px);
+    }
+}
+
+.section .f3 {
+  width: 12px;
+  position: absolute;
+  transform: translate(35px, 28px);
+  animation: 2.3s f3 linear infinite;
+}
+@keyframes f3 {
+    0%{
+        transform: translate(35px, 28px);
+    }
+    50%{
+        transform: translate(35px, 32px);
+    }
+    100%{
+        transform: translate(35px, 28px);
+    }
+}
+.section .pan {
+  width: 150px;
+  animation: 2s pan linear infinite;
+}
+
+@keyframes pan {
+    0%{
+        transform: translate(0px);
+    }
+    25%{
+        transform: translate(-5px);
+    }
+    50%{
+        transform: translate(0px);
+    }
+    75%{
+        transform: translate(5px);
+    }
+    100%{
+        transform: translate(0px);
+    }
+}

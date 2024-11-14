@@ -5,6 +5,7 @@ import LandingPage from './components/landingpage/LandingPage';
 import RestoItems from './components/resto/order/index.js';
 import RestoCartItems from './components/resto/order/cart/CartList.js';
 import BarcodePage from './components/resto/order/barcode/BarcodePage'; // Komponen di file B
+import WaitingList from './components/resto/order/waiting/waitingList'; // Komponen di file B
 function App() {
   return (
     <Router>
@@ -20,6 +21,7 @@ function App() {
             <Route path="/resto/cart/:id/:notabel" element={<RestoCartItems />} />
            
             <Route path="/resto/order/barcode" element={<BarcodePage />} />
+            <Route path="/resto/order/waiting" element={<WaitingList />} />
             
         </Routes>
       </div>

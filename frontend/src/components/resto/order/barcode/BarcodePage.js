@@ -65,7 +65,9 @@ function BarcodePage() {
   // Cek jika status sudah "paid", kemudian alihkan ke halaman lain
   useEffect(() => {
     if (status === 'paid') {
-      navigate('/'); // Ganti '/paid-page' dengan path tujuan Anda
+      navigate(`/resto/order/waiting`, { state: { idOrder: idOrder } });
+    } else if (status === 'done') {
+      navigate(`/`);
     }
   }, [status, navigate]);
 
@@ -93,7 +95,9 @@ function BarcodePage() {
       const response = await fetch(`http://localhost:3000/api/order/status/${idOrder}`);
       const data = await response.json();
       if (data.status === 'paid') {
-        navigate('/'); // Alihkan ke halaman jika status paid
+        navigate('/resto/order/waiting'); // Alihkan ke halaman jika status paid
+      } else if (status === 'done') {
+        navigate(`/`);
       } else {
         alert('Order belum dibayar.');
       }

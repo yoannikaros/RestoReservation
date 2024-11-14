@@ -35,6 +35,10 @@ function CartList() {
       
       if (data.status === 'pending') {
         navigate('/resto/order/barcode', { state: { idOrder: idOrder } });
+      } else if (data.status === 'paid') {
+        navigate(`/resto/order/waiting`, { state: { idOrder: idOrder } });
+      } else if (data.status === 'ready') {
+        navigate(`/resto/order/waiting`, { state: { idOrder: idOrder } });
       } 
     } catch (error) {
       console.error('Error fetching status:', error);

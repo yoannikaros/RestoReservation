@@ -23,8 +23,8 @@ function BottomNav({ totalPrice, orderType, notabel }) {
         // Bayar dulu baru makanan datang
         navigate('/resto/order/barcode', { state: { idOrder: Idorder } });
       } else if (serveType === 2) {
-        // Menunggu Makanan datang lalu bayar
-        window.location.href = '/';
+        // Menunggu Makanan datang lalu bayar, waiting room terlebih dahulu
+        navigate(`/resto/order/waiting`, { state: { idOrder: Idorder } });
       }  else {
         console.log('Nilai serveType tidak valid:', serveType);
       }

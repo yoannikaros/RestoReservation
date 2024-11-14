@@ -1,0 +1,97 @@
+/* Style for the waiting room */
+.waiting-room {
+    text-align: center;
+    margin-top: 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+.waiting-header {
+    font-size: 36px;
+    color: #4CAF50;
+}
+
+.order-status {
+    font-size: 24px;
+    color: #888;
+}
+
+.check-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+
+.check-button:hover {
+    background-color: #45a049;
+}
+
+.navigate-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+
+.navigate-button:hover {
+    background-color: #3900a4;
+}
+
+/* Animasi orang memasak */
+.cooking-animation {
+    margin-top: 30px;
+    position: relative;
+    height: 200px;
+}
+
+.chef {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: chefMove 3s ease-in-out infinite;
+}
+
+.chef-body {
+    width: 30px;
+    height: 60px;
+    background-color: #ffb74d;
+    border-radius: 5px;
+}
+
+.chef-head {
+    width: 20px;
+    height: 20px;
+    background-color: #f1c40f;
+    border-radius: 50%;
+    margin: -10px auto 10px;
+}
+
+.chef-arms {
+    width: 60px;
+    height: 10px;
+    background-color: #ffb74d;
+    position: relative;
+    top: -10px;
+    margin-left: -15px;
+}
+
+@keyframes chefMove {
+    0% {
+        transform: translateX(-50%) translateY(0);
+    }
+    50% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+}
