@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 import { getOrderId } from '../orderDB'; // Import fungsi baru
 import './WaitingList.css'; // Menambahkan file CSS untuk animasi dan style
 import { getProfileIdFromCart } from '../cart/cartDB';
+import config from '../../config';
 
 function WaitingList() {
     const location = useLocation();
@@ -24,7 +25,7 @@ function WaitingList() {
     const fetchServeType = async () => {
         try {
             const profileId = await getProfileIdFromCart();
-            const response = await fetch(`http://localhost:3000/api/settings/profile/${profileId}`);
+            const response = await fetch(`${config.baseURL}/api/settings/profile/${profileId}`);
             const data = await response.json();
             const serveType = data[0]?.serveType;
 
@@ -57,7 +58,7 @@ function WaitingList() {
             }
 
             // Lakukan permintaan untuk mengecek status menggunakan idOrder
-            const response = await fetch(`http://localhost:3000/api/order/status/${idOrderDB}`);
+            const response = await fetch(`${config.baseURL}/api/order/status/${idOrderDB}`);
             const data = await response.json();
 
             if (data.status === ORDER_STATUS.READY) {
@@ -76,7 +77,7 @@ function WaitingList() {
         fetchServeType();
         if (!idOrder) return; // Pastikan idOrder ada sebelum mencoba koneksi socket
 
-        const newSocket = io('http://localhost:3000'); // Ganti dengan URL server Anda
+        const newSocket = io(`${config.baseURL}`); // Ganti dengan URL server Anda
         setSocket(newSocket);
 
         newSocket.on('connect', () => {
@@ -138,7 +139,7 @@ function WaitingList() {
     const checkStatusManually = async () => {
         try {
             const idOrderDB = await getOrderId();
-            const response = await fetch(`http://localhost:3000/api/order/status/${idOrderDB}`);
+            const response = await fetch(`${config.baseURL}/api/order/status/${idOrderDB}`);
             const data = await response.json();
             if (data.status === ORDER_STATUS.READY) {
                 alert('Makanan Sudah Siap.');

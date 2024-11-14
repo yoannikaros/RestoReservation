@@ -1,8 +1,9 @@
 import { submitCartToApi } from './cartApi';
 import { getProfileIdFromCart } from './cartDB'; // Import fungsi baru
+import config from '../../config';
 
 export const submitOrderApi = async (notabel, totalPrice, orderType, noTrans) => {
-  const url = "http://localhost:3000/api/pemesanan";
+  const url = `${config.baseURL}/api/pemesanan`;
   const profileId = await getProfileIdFromCart();
   
   const orderData = {

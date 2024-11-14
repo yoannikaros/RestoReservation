@@ -5,6 +5,8 @@ import { submitOrderApi } from './orderApi'; // Import submitOrderApi
 import { getProfileIdFromCart } from './cartDB'; // Import fungsi baru
 import { useNavigate } from 'react-router-dom';
 import { saveOrderId } from '../orderDB'; // Import fungsi baru
+import config from '../../config';
+
 
 function BottomNav({ totalPrice, orderType, notabel }) {
   const [loading, setLoading] = useState(false); // State untuk melacak status loading
@@ -14,7 +16,7 @@ function BottomNav({ totalPrice, orderType, notabel }) {
   // Fungsi untuk mengambil serveType dan mengalihkan sesuai nilainya
   const fetchServeTypeAndRedirect = async (profileId, Idorder) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/settings/profile/${profileId}`);
+      const response = await fetch(`${config.baseURL}/api/settings/profile/${profileId}`);
       const data = await response.json();
       const serveType = data[0]?.serveType;
 

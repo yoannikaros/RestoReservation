@@ -10,6 +10,7 @@ import CartModal from './VariantModal';
 import { useParams } from 'react-router-dom'; // Import useParams
 import { useNavigate } from 'react-router-dom';
 import { getOrderId } from './orderDB'; // Import fungsi baru
+import config from '../config';
 
 function RestoItems() {
   const [items, setItems] = useState([]);
@@ -58,7 +59,7 @@ function RestoItems() {
       }
   
       // Lakukan permintaan untuk mengecek status menggunakan idOrder j
-      const response = await fetch(`http://localhost:3000/api/order/status/${idOrder}`);
+      const response = await fetch(`${config.baseURL}/api/order/status/${idOrder}`);
       const data = await response.json();
       
       if (data.status === 'pending') {
@@ -79,7 +80,7 @@ function RestoItems() {
   
   const handleOpenCategoryModal = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/categories/profile/${id}`);
+      const response = await axios.get(`${config.baseURL}/api/categories/profile/${id}`);
       setCategories(response.data);
       setOpenCategoryModal(true);
     } catch (error) {
@@ -96,7 +97,7 @@ function RestoItems() {
     const fetchData = async () => {
       try {
         await checkOrder(); 
-        const response = await axios.get(`http://localhost:3000/api/resto_items/profile/${id}`);
+        const response = await axios.get(`${config.baseURL}/api/resto_items/profile/${id}`);
         setItems(response.data.results.resto_item);
         setLoading(false);
       } catch (error) {
@@ -109,7 +110,7 @@ function RestoItems() {
 
   const handleOpenDetail = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/resto_items/${id}`);
+      const response = await axios.get(`${config.baseURL}/api/resto_items/${id}`);
       setSelectedItem(response.data.results.resto_item);
       setOpenDetailModal(true);
     } catch (error) {
@@ -127,10 +128,10 @@ function RestoItems() {
       let TitleItem = '';
 
       try {
-        const variantResponse = await axios.get(`http://localhost:3000/api/variants/resto_item/${id}`);
+        const variantResponse = await axios.get(`${config.baseURL}/api/variants/resto_item/${id}`);
         fetchedVariants = variantResponse.data;
 
-        const itemResponse = await axios.get(`http://localhost:3000/api/resto_items/${id}`);
+        const itemResponse = await axios.get(`${config.baseURL}/api/resto_items/${id}`);
         const item = itemResponse.data.results.resto_item;
         photoUrl = item.photo; // Ambil URL foto dari data item
         priceBase = item.base_price;
@@ -148,7 +149,7 @@ function RestoItems() {
       if (fetchedVariants.length > 0) {
         setVariants(fetchedVariants);
       } else {
-        const itemResponse = await axios.get(`http://localhost:3000/api/resto_items/${id}`);
+        const itemResponse = await axios.get(`${config.baseURL}/api/resto_items/${id}`);
         const item = itemResponse.data.results.resto_item;
         photoUrl = item.photo; // Ambil URL foto dari data item
         priceBase = item.base_price;

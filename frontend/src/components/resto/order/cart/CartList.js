@@ -8,6 +8,7 @@ import { getCartItems, updateItemQuantity, deleteItemFromCart,updateItemNote } f
 import { useParams } from 'react-router-dom';
 import { getOrderId } from '../orderDB'; // Import fungsi baru
 import { useNavigate } from 'react-router-dom';
+import config from '../../config';
 
 function CartList() {
   const { id, notabel } = useParams();
@@ -30,7 +31,7 @@ function CartList() {
       }
   
       // Lakukan permintaan untuk mengecek status menggunakan idOrder
-      const response = await fetch(`http://localhost:3000/api/order/status/${idOrder}`);
+      const response = await fetch(`${config.baseURL}/api/order/status/${idOrder}`);
       const data = await response.json();
       
       if (data.status === 'pending') {

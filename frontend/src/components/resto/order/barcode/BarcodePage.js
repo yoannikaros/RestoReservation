@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Barcode from 'react-barcode';
 import io from 'socket.io-client';
 import { getOrderId } from '../orderDB'; // Import fungsi baru
+import config from '../../config';
 
 function BarcodePage() {
   const location = useLocation();
@@ -23,7 +24,7 @@ function BarcodePage() {
       }
 
       // Lakukan permintaan untuk mengecek status menggunakan idOrder
-      const response = await fetch(`http://localhost:3000/api/order/status/${idOrder}`);
+      const response = await fetch(`${config.baseURL}/api/order/status/${idOrder}`);
       const data = await response.json();
 
       if (data.status === 'pending') {
@@ -39,7 +40,7 @@ function BarcodePage() {
   useEffect(() => {
     if (!idOrder) return; // Pastikan idOrder ada sebelum mencoba koneksi socket
 
-    const newSocket = io('http://localhost:3000'); // Ganti dengan URL server Anda
+    const newSocket = io( `${config.baseURL}`); // Ganti dengan URL server Anda
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
@@ -92,7 +93,7 @@ function BarcodePage() {
 
   const checkStatusManually = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/order/status/${idOrder}`);
+      const response = await fetch(`${config.baseURL}/api/order/status/${idOrder}`);
       const data = await response.json();
       if (data.status === 'paid') {
         navigate('/resto/order/waiting'); // Alihkan ke halaman jika status paid

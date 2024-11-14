@@ -1,8 +1,9 @@
 // cartApi.js
 
 import { openDB } from 'idb';
+import config from '../../config';
 
-const API_URL = 'http://localhost:3000/api/cart';
+const API_URL = `${config.baseURL}/api/cart`;
 
 const getLastTransactionNumberFromApi = async () => {
   try {
