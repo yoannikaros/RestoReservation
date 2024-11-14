@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef  } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import { getOrderId } from '../orderDB'; // Import fungsi baru
@@ -14,6 +14,7 @@ function WaitingList() {
     const [socket, setSocket] = useState(null);
     const [isBtnStatus, setBtnStatus] = useState(true); // State untuk visibilitas tombol
     const [isBtnToBarcode, setisBtnToBarcode] = useState(false); // State untuk visibilitas tombol
+    const audioRef = useRef(null); // Deklarasi audioRef
 
     const ORDER_STATUS = {
         READY: 'ready',
@@ -21,6 +22,12 @@ function WaitingList() {
         PENDING: 'pending',
     };
 
+    const handleBackToInitial = () => {
+        // Arahkan langsung ke URL awal yang disimpan.
+        stopMusic();
+        const initialURL = sessionStorage.getItem('initialURL') || '/';
+        navigate(initialURL);
+    };
 
     const fetchServeType = async () => {
         try {
@@ -64,7 +71,7 @@ function WaitingList() {
             if (data.status === ORDER_STATUS.READY) {
                 playMusic();
             } else if (status === ORDER_STATUS.DONE) {
-                window.location.href = '/';
+                handleBackToInitial();
             }
 
         } catch (error) {
@@ -106,15 +113,25 @@ function WaitingList() {
 
             playMusic(); // Menambahkan pemutaran musik
         } else if (status === ORDER_STATUS.DONE) {
-            window.location.href = '/';
+            handleBackToInitial();
         }
     }, [status]);
 
     // Fungsi untuk memutar musik
     const playMusic = () => {
-        const audio = new Audio('/notif.mp3'); // Ganti dengan path musik yang sesuai
-        audio.loop = true;
-        audio.play();
+        if (!audioRef.current) {
+            audioRef.current = new Audio('/notif.mp3'); // Ganti dengan path musik yang sesuai
+            audioRef.current.loop = true;
+        }
+        audioRef.current.play();
+    };
+
+    // Fungsi untuk menghentikan musik
+    const stopMusic = () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0; // Reset ke awal
+        }
     };
 
     // Menghindari kembali ke halaman sebelumnya
@@ -141,13 +158,15 @@ function WaitingList() {
             const idOrderDB = await getOrderId();
             const response = await fetch(`${config.baseURL}/api/order/status/${idOrderDB}`);
             const data = await response.json();
+
             if (data.status === ORDER_STATUS.READY) {
                 alert('Makanan Sudah Siap.');
             } else if (data.status === ORDER_STATUS.DONE) {
-                window.location.href = '/';
+                handleBackToInitial();
             } else {
                 alert('Makanan Belum Siap.');
             }
+
         } catch (error) {
             console.error('Error fetching status:', error);
             alert('Gagal mengecek status.');

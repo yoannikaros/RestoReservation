@@ -68,7 +68,7 @@ function BarcodePage() {
     if (status === 'paid') {
       navigate(`/resto/order/waiting`, { state: { idOrder: idOrder } });
     } else if (status === 'done') {
-      navigate(`/`);
+      handleBackToInitial();
     }
   }, [status, navigate]);
 
@@ -91,6 +91,14 @@ function BarcodePage() {
     };
   }, []); // Pastikan effect hanya dijalankan sekali
 
+
+  const handleBackToInitial = () => {
+    // Arahkan langsung ke URL awal yang disimpan.
+    const initialURL = sessionStorage.getItem('initialURL') || '/';
+    navigate(initialURL);
+  };
+
+
   const checkStatusManually = async () => {
     try {
       const response = await fetch(`${config.baseURL}/api/order/status/${idOrder}`);
@@ -98,7 +106,7 @@ function BarcodePage() {
       if (data.status === 'paid') {
         navigate('/resto/order/waiting'); // Alihkan ke halaman jika status paid
       } else if (status === 'done') {
-        navigate(`/`);
+        handleBackToInitial();
       } else {
         alert('Order belum dibayar.');
       }

@@ -18,6 +18,8 @@ function CartList() {
   const [showAllItems, setShowAllItems] = useState(false);
   const [notes, setNotes] = useState({});
   const navigate = useNavigate();
+
+  
   
   const checkOrder = async () => {
     try {
@@ -74,6 +76,9 @@ function CartList() {
   useEffect(() => {
     loadCartItems();
     checkOrder();
+    if (!sessionStorage.getItem('initialURL')) {
+      sessionStorage.setItem('initialURL', `/resto/order/${id}/${notabel}`);
+    }
   }, []);
 
   return (
