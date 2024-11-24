@@ -1,20 +1,19 @@
-import React, { useEffect, useState,useRef  } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
-import { getOrderId } from '../orderDB'; // Import fungsi baru
-import './WaitingList.css'; // Menambahkan file CSS untuk animasi dan style
+import { getOrderId } from '../orderDB';
+import './WaitingList.css';
 import { getProfileIdFromCart } from '../cart/cartDB';
 import config from '../../config';
 
 function WaitingList() {
     const location = useLocation();
-    const navigate = useNavigate(); // Hook untuk navigasi
-    const { idOrder } = location.state || {}; // Ambil idOrder dari state
+    const navigate = useNavigate();
+    const { idOrder } = location.state || {};
     const [status, setStatus] = useState('');
     const [socket, setSocket] = useState(null);
-    const [isBtnStatus, setBtnStatus] = useState(true); // State untuk visibilitas tombol
-    const [isBtnToBarcode, setisBtnToBarcode] = useState(false); // State untuk visibilitas tombol
-    const audioRef = useRef(null); // Deklarasi audioRef
+    const [isBtnVisible, setIsBtnVisible] = useState({ status: true, toBarcode: false });
+    const audioRef = useRef(null);
 
     const ORDER_STATUS = {
         READY: 'ready',
@@ -23,7 +22,6 @@ function WaitingList() {
     };
 
     const handleBackToInitial = () => {
-        // Arahkan langsung ke URL awal yang disimpan.
         stopMusic();
         const initialURL = sessionStorage.getItem('initialURL') || '/';
         navigate(initialURL);
@@ -37,165 +35,112 @@ function WaitingList() {
             const serveType = data[0]?.serveType;
 
             if (serveType === 2) {
-                setisBtnToBarcode(true);
-                setBtnStatus(false);
-            } else {
-                console.log('Nilai serveType tidak valid:', serveType);
+                setIsBtnVisible({ status: false, toBarcode: true });
             }
         } catch (error) {
             console.error('Gagal mengambil serveType:', error);
         }
     };
 
-    const handleButtonClick = () => {
-        if (isBtnToBarcode) {
-            navigate('/resto/order/barcode', { state: { idOrder: idOrder } });
-        }
-    };
-
-    const checkOrder = async () => {
+    const checkOrderStatus = async () => {
         try {
-            // Ambil id_order dari cart
             const idOrderDB = await getOrderId();
-
-            // Periksa apakah idOrder valid
             if (!idOrderDB) {
                 console.error('ID Order tidak ditemukan.');
                 return;
             }
 
-            // Lakukan permintaan untuk mengecek status menggunakan idOrder
             const response = await fetch(`${config.baseURL}/api/order/status/${idOrderDB}`);
             const data = await response.json();
 
             if (data.status === ORDER_STATUS.READY) {
                 playMusic();
-            } else if (status === ORDER_STATUS.DONE) {
-                handleBackToInitial();
-            }
-
-        } catch (error) {
-            console.error('Error fetching status:', error);
-            alert('Gagal mengecek status.');
-        }
-    };
-
-    useEffect(() => {
-        fetchServeType();
-        if (!idOrder) return; // Pastikan idOrder ada sebelum mencoba koneksi socket
-
-        const newSocket = io(`${config.baseURL}`); // Ganti dengan URL server Anda
-        setSocket(newSocket);
-
-        newSocket.on('connect', () => {
-            console.log('Socket connected');
-        });
-
-        // Listen for updates from server untuk id_order tertentu
-        newSocket.on('order-status-update', (data) => {
-            console.log('Received order status update:', data);
-            if (String(data.id_order) === String(idOrder)) {
-                console.log('Updating status to:', data.status); // Log untuk memeriksa status yang diterima
-                setStatus(data.status);
-
-            }
-        });
-
-        return () => {
-            if (newSocket) {
-                newSocket.disconnect();
-            }
-        };
-    }, [idOrder]); // Perubahan pada idOrder akan trigger efek ini lagi
-
-    useEffect(() => {
-        if (status === ORDER_STATUS.READY) {
-
-            playMusic(); // Menambahkan pemutaran musik
-        } else if (status === ORDER_STATUS.DONE) {
-            handleBackToInitial();
-        }
-    }, [status]);
-
-    // Fungsi untuk memutar musik
-    const playMusic = () => {
-        if (!audioRef.current) {
-            audioRef.current = new Audio('/notif.mp3'); // Ganti dengan path musik yang sesuai
-            audioRef.current.loop = true;
-        }
-        audioRef.current.play();
-    };
-
-    // Fungsi untuk menghentikan musik
-    const stopMusic = () => {
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0; // Reset ke awal
-        }
-    };
-
-    // Menghindari kembali ke halaman sebelumnya
-    useEffect(() => {
-        // Ganti riwayat sehingga tidak ada entri sebelumnya
-        window.history.replaceState(null, '', window.location.href);
-
-        const handlePopState = () => {
-            // Ketika pengguna mencoba menggunakan tombol "back", kita tetap mengganti riwayat
-            window.history.replaceState(null, '', window.location.href);
-        };
-
-        // Menambahkan event listener untuk popstate
-        window.addEventListener('popstate', handlePopState);
-
-        return () => {
-            // Hapus event listener ketika komponen di-unmount
-            window.removeEventListener('popstate', handlePopState);
-        };
-    }, []); // Pastikan effect hanya dijalankan sekali
-
-    const checkStatusManually = async () => {
-        try {
-            const idOrderDB = await getOrderId();
-            const response = await fetch(`${config.baseURL}/api/order/status/${idOrderDB}`);
-            const data = await response.json();
-
-            if (data.status === ORDER_STATUS.READY) {
                 alert('Makanan Sudah Siap.');
             } else if (data.status === ORDER_STATUS.DONE) {
                 handleBackToInitial();
             } else {
                 alert('Makanan Belum Siap.');
             }
-
         } catch (error) {
             console.error('Error fetching status:', error);
             alert('Gagal mengecek status.');
         }
     };
 
-    // Log untuk debugging
-    console.log('Current status:', status);
+    const handleButtonClick = () => {
+        if (isBtnVisible.toBarcode) {
+            navigate('/resto/order/barcode', { state: { idOrder } });
+        }
+    };
 
-    if (!idOrder) {
-        checkOrder(); // Tampilkan loading jika idOrder belum tersedia
-    }
+    const playMusic = () => {
+        if (!audioRef.current) {
+            audioRef.current = new Audio('/notif.mp3');
+            audioRef.current.loop = true;
+        }
+        audioRef.current.play();
+    };
+
+    const stopMusic = () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
+    };
+
+    useEffect(() => {
+        fetchServeType();
+        if (!idOrder) return;
+
+        const newSocket = io(`${config.baseURL}`);
+        setSocket(newSocket);
+
+        newSocket.on('connect', () => console.log('Socket connected'));
+
+        newSocket.on('order-status-update', (data) => {
+            if (String(data.id_order) === String(idOrder)) {
+                setStatus(data.status);
+            }
+        });
+
+        return () => newSocket.disconnect();
+    }, [idOrder]);
+
+    useEffect(() => {
+        if (status === ORDER_STATUS.READY) {
+            playMusic();
+        } else if (status === ORDER_STATUS.DONE) {
+            handleBackToInitial();
+        }
+    }, [status]);
+
+    useEffect(() => {
+        window.history.replaceState(null, '', window.location.href);
+        const handlePopState = () => window.history.replaceState(null, '', window.location.href);
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
+
+    useEffect(() => {
+        if (!idOrder) checkOrderStatus();
+    }, [idOrder]);
 
     return (
         <div className="waiting-room">
             <h2 className="waiting-header">Waiting</h2>
             <h3 className="order-status">Status Order: {status || 'Loading status...'}</h3>
 
-            {isBtnStatus && (
-                <button onClick={checkStatusManually} className="check-button">Cek Status Pembayaran</button>
+            {isBtnVisible.status && (
+                <button onClick={checkOrderStatus} className="check-button">Cek Status Pembayaran</button>
             )}
 
-            {isBtnToBarcode && (
+            {isBtnVisible.toBarcode && (
                 <>
                     <br />
                     <button onClick={handleButtonClick} className="navigate-button">Lanjut Pembayaran</button>
                 </>
             )}
-
         </div>
     );
 }
